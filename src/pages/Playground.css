@@ -1,0 +1,76 @@
+.pg {
+  background: var(--ctd-panel);
+  color: var(--ctd-text);
+  border-radius: 20px;
+  padding: 20px;
+  margin: 16px auto;
+  max-width: 1200px;
+}
+.pg h2 { margin: 0 0 6px; }
+.pg-blurb { margin: 0 0 16px; color: var(--ctd-muted); max-width: 70ch; }
+.pg-blurb b { color: var(--ctd-text); }
+
+.pg-presets { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.pg-chip {
+  background: var(--ctd-texture) 0 0 / var(--ctd-texture-size) repeat, var(--ctd-surfaceOff);
+  color: var(--ctd-text);
+  border: 2px solid transparent;
+  border-radius: 999px;
+  padding: 8px 14px;
+  font: 700 14px/1 'Fredoka', system-ui, sans-serif;
+  text-transform: capitalize;
+  cursor: pointer;
+}
+.pg-chip[aria-pressed='true'] { border-color: var(--ctd-gold); color: var(--ctd-gold); }
+.pg-chip:focus-visible, .pg-copy:focus-visible { outline: 3px solid var(--ctd-text); outline-offset: 2px; }
+
+.pg-body { display: grid; grid-template-columns: 260px 1fr; gap: 20px; }
+.pg-controls { display: flex; flex-direction: column; gap: 12px; }
+.pg-field { display: flex; flex-direction: column; gap: 4px; font-size: 14px; }
+.pg-field > span { display: flex; justify-content: space-between; color: var(--ctd-muted); }
+.pg-field output { color: var(--ctd-text); }
+.pg-field select {
+  background: var(--ctd-surface);
+  color: var(--ctd-text);
+  border: 1px solid var(--ctd-surfaceOff);
+  border-radius: 8px;
+  padding: 6px 8px;
+  font: inherit;
+}
+.pg-field input[type='range'] { accent-color: var(--ctd-gold); }
+.pg-field :disabled { opacity: 0.4; }
+.pg-warn { margin: 0; color: var(--ctd-gold); font-size: 13px; }
+
+.pg-preview { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.pg-tiles { display: flex; flex-wrap: wrap; gap: 12px; }
+.pg-panel {
+  min-height: 120px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  text-align: center;
+  background: var(--ctd-texture) 0 0 / var(--ctd-texture-size) repeat, var(--ctd-surfaceOff);
+}
+.pg-json {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  background: var(--ctd-surface);
+  border-radius: 10px;
+  padding: 8px 8px 8px 12px;
+}
+.pg-json code { flex: 1; min-width: 0; overflow-x: auto; white-space: nowrap; font-size: 12px; color: var(--ctd-muted); }
+.pg-copy {
+  background: var(--ctd-gold);
+  color: var(--ctd-panel);
+  border: 0;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font: 700 13px/1 'Fredoka', system-ui, sans-serif;
+  cursor: pointer;
+}
+
+@media (max-width: 760px) {
+  .pg-body { grid-template-columns: 1fr; }
+}
