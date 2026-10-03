@@ -1,0 +1,110 @@
+.btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0;
+  border: 3px solid;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: rgba(0, 0, 0, 0.3);
+  color: white;
+  font-family: inherit;
+}
+
+.btn:hover:not(.btn-disabled) {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+}
+
+.btn:active:not(.btn-disabled) {
+  transform: scale(0.98);
+}
+
+.btn-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Sizes */
+.btn-small {
+  width: 64px;
+  height: 64px;
+  font-size: 12px;
+}
+
+.btn-medium {
+  width: 100px;
+  height: 100px;
+  font-size: 14px;
+}
+
+.btn-large {
+  width: 140px;
+  height: 140px;
+  font-size: 16px;
+}
+
+/* Variants */
+.btn-gold {
+  border-color: #FFD700;
+  color: #FFD700;
+}
+
+.btn-purple {
+  border-color: #9C27B0;
+  color: #9C27B0;
+}
+
+.btn-orange {
+  border-color: #FF9800;
+  color: #FF9800;
+}
+
+.btn-blue {
+  border-color: #2196F3;
+  color: #2196F3;
+}
+
+.btn-pink {
+  border-color: #E91E63;
+  color: #E91E63;
+}
+
+.btn-green {
+  border-color: #4CAF50;
+  color: #4CAF50;
+}
+
+.btn-red {
+  border-color: #F44336;
+  color: #F44336;
+}
+
+/* Icon styling */
+.btn-icon {
+  font-size: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+}
+
+.btn-small .btn-icon {
+  font-size: 24px;
+  width: 32px;
+  height: 32px;
+}
+
+.btn-label {
+  display: block;
+  text-align: center;
+  word-wrap: break-word;
+}
