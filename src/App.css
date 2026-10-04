@@ -21,8 +21,8 @@
   .hud-grid { justify-content: center; }
 }
 
-/* The nag test. */
-.nag-test {
+/* The nudge and spotlight test. */
+.nudge-test {
   background: var(--ctd-panel);
   color: var(--ctd-text);
   border-radius: 20px;
@@ -30,10 +30,11 @@
   margin: 16px auto;
   max-width: 1200px;
 }
-.nag-test h2 { margin: 0 0 6px; }
-.nag-test p { margin: 0 0 14px; color: var(--ctd-muted); max-width: 70ch; }
-.nag-test-row { display: flex; flex-wrap: wrap; gap: 10px; }
-.nag-test-btn {
+.nudge-test h2 { margin: 0 0 6px; }
+.nudge-test p { margin: 0 0 14px; color: var(--ctd-muted); max-width: 70ch; }
+.nudge-test p b { color: var(--ctd-text); }
+.nudge-test-row { display: flex; flex-wrap: wrap; gap: 10px; }
+.nudge-test-btn {
   background: var(--ctd-surfaceOff);
   color: var(--ctd-text);
   border: 0;
@@ -42,5 +43,5 @@
   font: 700 15px/1 'Fredoka', system-ui, sans-serif;
   cursor: pointer;
 }
-.nag-test-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-.nag-test-btn:focus-visible { outline: 3px solid var(--ctd-text); outline-offset: 2px; }
+.nudge-test-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.nudge-test-btn:focus-visible { outline: 3px solid var(--ctd-text); outline-offset: 2px; }

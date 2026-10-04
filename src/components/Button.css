@@ -1,4 +1,4 @@
-/* The blink clock every tile runs (see ctd-nag below), inherited by the
+/* The blink clock every tile runs (see ctd-nudge below), inherited by the
    fill, the icon and the label so all three blink as one. */
 @property --ctd-blink {
   syntax: '<number>';
@@ -31,13 +31,13 @@
   cursor: pointer;
   /* The icon is sized off the tile's own width (cqw), whatever the label size. */
   container-type: inline-size;
-  animation: ctd-nag 5.2s step-end infinite;
-  /* How visible the blinking parts are: the blink clock while nagging
-     (--ctd-nag-on: 1), and fully visible otherwise. */
-  --ctd-nag-fade: calc(1 - var(--ctd-nag-on, 0) * (1 - var(--ctd-blink)));
+  animation: ctd-nudge 5.2s step-end infinite;
+  /* How visible the blinking parts are: the blink clock while nudging
+     (--ctd-nudge-on: 1), and fully visible otherwise. */
+  --ctd-nudge-fade: calc(1 - var(--ctd-nudge-on, 0) * (1 - var(--ctd-blink)));
 }
-/* The fill, on a layer of its own so a nag can fade it while the icon, label
-   and outline stay put: colour, shine and texture, with a ring of the tile's
+/* The fill, on a layer of its own so a nudge can fade it while the dark
+   outline stays put: colour, shine and texture, with a ring of the tile's
    own colour drawn over them so neither touches it. No lip, no drop shadow. */
 .ctd-btn::before {
   content: '';
@@ -51,7 +51,7 @@
     linear-gradient(to top, rgb(255 255 255 / 0.38), rgb(255 255 255 / 0) 55%, rgb(0 0 0 / 0.12)),
     var(--tile);
   box-shadow: inset 0 0 0 var(--edge) var(--tile);
-  opacity: var(--ctd-nag-fade);
+  opacity: var(--ctd-nudge-fade);
 }
 /* A tile's icon spills over its neighbours: the one under the pointer comes to
    the front. The tile itself never changes size. */
@@ -65,19 +65,19 @@
 .ctd-btn-medium { width: 112px; height: 112px; --label-space: 24.5px; }
 .ctd-btn-large { width: 140px; height: 140px; font-size: 17px; --radius: 35px; --label-space: 27px; }
 
-/* The nag: the fill, the icon (shadow and all) and the label blink twice and
+/* The nudge: the fill, the icon (shadow and all) and the label blink twice and
    rest, while the dark outline stays put. The steps are 0.45s each (faded,
    full, faded, full), then held full for the rest of a 5.2s period. Every tile
    runs this clock from the moment it is drawn, so tiles on the page keep one
-   time, and a nag only decides whether the tile follows it. */
-@keyframes ctd-nag {
+   time, and a nudge only decides whether the tile follows it. */
+@keyframes ctd-nudge {
   0% { --ctd-blink: 0.25; }
   8.654% { --ctd-blink: 1; }
   17.308% { --ctd-blink: 0.25; }
   25.962% { --ctd-blink: 1; }
   100% { --ctd-blink: 1; }
 }
-.ctd-btn-nag { --ctd-nag-on: 1; }
+.ctd-btn-nudge { --ctd-nudge-on: 1; }
 
 .ctd-btn-icon {
   position: absolute;
@@ -94,7 +94,7 @@
      plus a soft one under it so it reads on light and dark fills alike. */
   filter: drop-shadow(4.5px 7.5px 0 rgb(0 0 0 / 0.45)) drop-shadow(0 3px 6px rgb(0 0 0 / 0.25));
   pointer-events: none;
-  opacity: var(--ctd-nag-fade);
+  opacity: var(--ctd-nudge-fade);
 }
 .ctd-btn-label {
   position: relative;
@@ -104,5 +104,5 @@
   white-space: nowrap;
   -webkit-text-stroke: 3px var(--ctd-panel);
   paint-order: stroke fill;
-  opacity: var(--ctd-nag-fade);
+  opacity: var(--ctd-nudge-fade);
 }

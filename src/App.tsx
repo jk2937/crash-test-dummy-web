@@ -19,18 +19,18 @@ const RIGHT: [string, string, ColorKey][] = [
 
 // A showcase of the toolkit, laid out like the game's HUD.
 export default function App() {
-  // The nag, as the game's VEHICLES tile does it: the tile blinks until it is
-  // pressed. The first time a queue runs dry the game also dims everything
-  // else, with the tile lifted above the shade -- one test button does each.
-  const [nagging, setNagging] = useState(false);
-  const [shadeUp, setShadeUp] = useState(false);
+  // As the game's VEHICLES tile does it. A nudge: the tile blinks until it is
+  // pressed. A spotlight: the same, with everything else dimmed under a shade
+  // and the tile lifted above it -- one test button does each.
+  const [nudging, setNudging] = useState(false);
+  const [spotlit, setSpotlit] = useState(false);
 
-  const nag = (withShade: boolean) => { setNagging(true); setShadeUp(withShade); };
+  const start = (spotlight: boolean) => { setNudging(true); setSpotlit(spotlight); };
   const pressVehicles = () => {
-    if (!nagging) return;
-    setNagging(false);
-    setShadeUp(false);
-    alert('VEHICLES pressed: the nag is over.');
+    if (!nudging) return;
+    setNudging(false);
+    setSpotlit(false);
+    alert('VEHICLES pressed: the nudge is over.');
   };
 
   return (
@@ -45,7 +45,7 @@ export default function App() {
         </section>
         <section className="hud-grid hud-right" aria-label="Right menu">
           <Button label="Vehicles" icon="🚗" color="gold" texture={TILE_TEXTURE}
-            nagging={nagging} spotlit={shadeUp} onClick={pressVehicles} />
+            nudge={nudging} spotlight={spotlit} onClick={pressVehicles} />
           {RIGHT.map(([label, icon, color]) => <Button key={label} label={label} icon={icon} color={color} texture={TILE_TEXTURE} />)}
         </section>
         <section className="hud-sizes" aria-label="Sizes">
@@ -56,18 +56,21 @@ export default function App() {
         </section>
       </main>
 
-      <section className="nag-test" aria-labelledby="nag-title">
-        <h2 id="nag-title">Nag test</h2>
-        <p>VEHICLES blinks until you press it. The shade version also dims everything else around it.</p>
-        <div className="nag-test-row">
-          <button className="nag-test-btn" onClick={() => nag(true)} disabled={nagging}>Shade + blink</button>
-          <button className="nag-test-btn" onClick={() => nag(false)} disabled={nagging}>Blink</button>
+      <section className="nudge-test" aria-labelledby="nudge-title">
+        <h2 id="nudge-title">Nudge and spotlight</h2>
+        <p>
+          A <b>nudge</b> blinks VEHICLES until you press it. A <b>spotlight</b> does the same and dims everything
+          else around it.
+        </p>
+        <div className="nudge-test-row">
+          <button className="nudge-test-btn" onClick={() => start(true)} disabled={nudging}>Spotlight</button>
+          <button className="nudge-test-btn" onClick={() => start(false)} disabled={nudging}>Nudge</button>
         </div>
       </section>
 
       <Playground />
 
-      <Shade show={shadeUp} />
+      <Shade show={spotlit} />
     </>
   );
 }
