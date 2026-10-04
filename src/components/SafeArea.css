@@ -7,3 +7,15 @@
     var(--ctd-safe-bottom, 0px)
     var(--ctd-safe-left, 0px);
 }
+
+/* Portrait: a panel from just under the tiles to the bottom of the screen,
+   scrolling inside itself. Its top edge already sits a margin below the
+   tiles, so the margin is not added again inside. */
+:root[data-ctd-hud='portrait'] .ctd-safe-area {
+  position: fixed;
+  inset: var(--ctd-safe-top, 0px) 0 0 0;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-top: 0;
+}

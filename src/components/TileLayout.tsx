@@ -55,8 +55,9 @@ function subscribe(onChange: () => void) {
 // It is a HUD: fixed to the screen, over the page, never scrolling with it.
 // The rest of the screen -- the safe area -- is published on the page root as
 // --ctd-safe-top, -right, -bottom and -left: how far content keeps in from
-// each edge to stay clear of the tiles, with the game's margin between. Use it
-// through SafeArea.
+// each edge to stay clear of the tiles, with the game's margin between -- and
+// the HUD's shape as data-ctd-hud="portrait" or "landscape" on the page root.
+// Use them through SafeArea.
 //
 //   Landscape: each region is a grid `columns` wide, filled row by row: left
 //              at the top left of the screen, right at the top right.
@@ -94,8 +95,10 @@ export function TileLayout({ tiles, columns = 2, portraitRows = 2, shade = false
     const safe = portrait
       ? { top: tilesDown, right: edge, bottom: edge, left: edge }
       : { top: edge, right: tilesAcross, bottom: edge, left: tilesAcross };
-    const root = document.documentElement.style;
-    for (const [side, px] of Object.entries(safe)) root.setProperty(`--ctd-safe-${side}`, `${px}px`);
+    const root = document.documentElement;
+    for (const [side, px] of Object.entries(safe)) root.style.setProperty(`--ctd-safe-${side}`, `${px}px`);
+    // Which shape the HUD is in, for SafeArea.
+    root.dataset.ctdHud = portrait ? 'portrait' : 'landscape';
   }, [portrait, tilesDown, tilesAcross, edge]);
 
   const slot = (id: string): CSSProperties => {
