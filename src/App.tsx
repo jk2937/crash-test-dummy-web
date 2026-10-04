@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, Shade, TileLayout, type TileSpec } from './components';
+import { Button, TileLayout, type TileSpec } from './components';
 import { PRESETS } from './pattern';
 import { Playground } from './pages/Playground';
 import './App.css';
@@ -44,42 +44,43 @@ export default function App() {
   return (
     <>
       <TileLayout
+        shade={spotlit}
         tiles={TILES.map((t, i) => ({
           ...t,
           texture: TEXTURES[i % TEXTURES.length],
           ...(t.id === 'vehicles' && { nudge: nudging, spotlight: spotlit, onClick: pressVehicles }),
         }))}
-      >
+      />
+
+      <div className="page">
         <header className="hud-title">
           <h1>Be a Crash Test Dummy · UI kit</h1>
           <p>The game's HUD, rebuilt for the web. Work in progress.</p>
         </header>
-      </TileLayout>
 
-      <main className="hud">
-        <section className="hud-sizes" aria-label="Sizes">
-          <Button label="Small" icon="🚀" color="setup" texture={TILE_TEXTURE} size="small" />
-          <Button label="Medium" icon="🚀" color="setup" texture={TILE_TEXTURE} />
-          <Button label="Large" icon="🚀" color="setup" texture={TILE_TEXTURE} size="large" />
-          <Button label="Disabled" icon="🚀" color="setup" texture={TILE_TEXTURE} disabled />
+        <main className="hud">
+          <section className="hud-sizes" aria-label="Sizes">
+            <Button label="Small" icon="🚀" color="setup" texture={TILE_TEXTURE} size="small" />
+            <Button label="Medium" icon="🚀" color="setup" texture={TILE_TEXTURE} />
+            <Button label="Large" icon="🚀" color="setup" texture={TILE_TEXTURE} size="large" />
+            <Button label="Disabled" icon="🚀" color="setup" texture={TILE_TEXTURE} disabled />
+          </section>
+        </main>
+
+        <section className="nudge-test" aria-labelledby="nudge-title">
+          <h2 id="nudge-title">Nudge and spotlight</h2>
+          <p>
+            A <b>nudge</b> blinks VEHICLES until you press it. A <b>spotlight</b> does the same and dims everything
+            else around it.
+          </p>
+          <div className="nudge-test-row">
+            <button className="nudge-test-btn" onClick={() => start(true)} disabled={nudging}>Spotlight</button>
+            <button className="nudge-test-btn" onClick={() => start(false)} disabled={nudging}>Nudge</button>
+          </div>
         </section>
-      </main>
 
-      <section className="nudge-test" aria-labelledby="nudge-title">
-        <h2 id="nudge-title">Nudge and spotlight</h2>
-        <p>
-          A <b>nudge</b> blinks VEHICLES until you press it. A <b>spotlight</b> does the same and dims everything
-          else around it.
-        </p>
-        <div className="nudge-test-row">
-          <button className="nudge-test-btn" onClick={() => start(true)} disabled={nudging}>Spotlight</button>
-          <button className="nudge-test-btn" onClick={() => start(false)} disabled={nudging}>Nudge</button>
-        </div>
-      </section>
-
-      <Playground />
-
-      <Shade show={spotlit} />
+        <Playground />
+      </div>
     </>
   );
 }

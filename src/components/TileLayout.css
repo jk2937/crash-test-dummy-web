@@ -1,7 +1,14 @@
 /* TileLayout works out the sizes and slots (see TileLayout.tsx); this only
-   applies them. It spans the whole width of the screen, with the game's
-   margin at each side. */
+   applies them. A HUD: fixed across the top of the screen, over the page, with
+   the game's margin at each side. Only the tiles take clicks; the page shows
+   and works through the rest of it. */
 .tile-layout {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  pointer-events: none;
   display: grid;
   gap: var(--gap);
   padding-left: var(--edge);
@@ -12,11 +19,8 @@
   /* Positioned so the slot's z-index applies: rows nearer the top sit above
      the ones below, so an icon spilling up never covers the label above it. */
   position: relative;
+  pointer-events: auto;
   --ctd-tile-size: var(--tile);
 }
-.tile-layout-middle {
-  align-self: center;
-  min-width: 0;
-  padding: 0 var(--gap);
-}
-.tile-layout-portrait .tile-layout-middle { padding: var(--gap) 0 0; }
+/* The shade covers the screen and takes every click under the HUD. */
+.tile-layout .ctd-shade { pointer-events: auto; }

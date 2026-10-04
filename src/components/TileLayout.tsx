@@ -1,5 +1,6 @@
-import { useSyncExternalStore, type CSSProperties, type ReactNode } from 'react';
+import { useLayoutEffect, useSyncExternalStore, type CSSProperties } from 'react';
 import { Button, type ButtonProps } from './Button';
+import { Shade } from './Shade';
 import './TileLayout.css';
 
 // Which side of the screen a tile belongs to in landscape.
@@ -16,9 +17,8 @@ interface TileLayoutProps {
   columns?: number;
   // Rows the tiles fill in portrait; the columns follow from the tile count.
   portraitRows?: number;
-  // Anything for the space between the two regions (landscape) or under the
-  // tiles (portrait).
-  children?: ReactNode;
+  // Dim everything under the HUD; a tile with `spotlight` stays above it.
+  shade?: boolean;
 }
 
 // The game's HUD measurements, in design units: the units the layout was
@@ -52,12 +52,17 @@ function subscribe(onChange: () => void) {
 // tile's region, spaced as the game spaces its HUD: an even gap between every
 // tile, and a margin to the screen's edges.
 //
+// It is a HUD: fixed to the screen, over the page, never scrolling with it.
+// The room it takes is published on the page root for the page to keep clear:
+// --ctd-hud-side (landscape: each side's tiles and their margins) and
+// --ctd-hud-top (portrait: the rows across the top), each 0px otherwise.
+//
 //   Landscape: each region is a grid `columns` wide, filled row by row: left
 //              at the top left of the screen, right at the top right.
 //   Portrait:  (taller than wide) every tile in one grid at the top, centred,
 //              `portraitRows` deep (left's tiles first, then right's); tiles
 //              and gaps shrink so a row fits the screen's width.
-export function TileLayout({ tiles, columns = 2, portraitRows = 2, children }: TileLayoutProps) {
+export function TileLayout({ tiles, columns = 2, portraitRows = 2, shade = false }: TileLayoutProps) {
   const [width, height] = useSyncExternalStore(subscribe, readViewport).split('x').map(Number);
 
   const portrait = width < height;
@@ -78,6 +83,16 @@ export function TileLayout({ tiles, columns = 2, portraitRows = 2, children }: T
   const shrink = portrait ? Math.min(Math.max((width / scale - 2 * spacing) / across, 0.3), 1) : 1;
   const tile = TILE * scale * shrink;
   const gap = spacing * scale * shrink;
+
+  // The room the HUD takes, for the page to keep clear (see above): the tiles,
+  // the screen margin outside them and a gap inside.
+  const side = portrait ? 0 : edge + columns * tile + (columns - 1) * gap + gap;
+  const top = portrait ? edge + gap + portraitRows * tile + portraitRows * gap : 0;
+  useLayoutEffect(() => {
+    const root = document.documentElement.style;
+    root.setProperty('--ctd-hud-side', `${side}px`);
+    root.setProperty('--ctd-hud-top', `${top}px`);
+  }, [side, top]);
 
   const slot = (id: string): CSSProperties => {
     // A spotlit tile's slot rises above the shade with it.
@@ -103,9 +118,7 @@ export function TileLayout({ tiles, columns = 2, portraitRows = 2, children }: T
     gridTemplateColumns: portrait
       ? `repeat(${portraitColumns}, var(--tile))`
       : `repeat(${columns}, var(--tile)) 1fr repeat(${columns}, var(--tile))`,
-    gridTemplateRows: portrait
-      ? `repeat(${portraitRows}, var(--tile)) auto`
-      : `repeat(${landscapeRows}, var(--tile))`,
+    gridTemplateRows: `repeat(${portrait ? portraitRows : landscapeRows}, var(--tile))`,
   } as CSSProperties;
 
   return (
@@ -115,16 +128,8 @@ export function TileLayout({ tiles, columns = 2, portraitRows = 2, children }: T
           <Button {...button} />
         </div>
       ))}
-      {children && (
-        <div
-          className="tile-layout-middle"
-          style={portrait
-            ? { gridColumn: '1 / -1', gridRow: portraitRows + 1 }
-            : { gridColumn: columns + 1, gridRow: `1 / span ${landscapeRows}` }}
-        >
-          {children}
-        </div>
-      )}
+      {/* Inside the HUD, so the spotlit tile's slot can rise above it. */}
+      <Shade show={shade} />
     </div>
   );
 }
