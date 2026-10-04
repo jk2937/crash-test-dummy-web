@@ -1,0 +1,15 @@
+.cert-ready, .cert-none { margin-top: 6px !important; font-size: 15px !important; font-weight: 700 !important; }
+.cert-ready { color: var(--ctd-claim); }
+.cert-none { color: var(--ctd-muted); }
+
+.cert-row { display: flex; align-items: center; gap: 16px; }
+.cert-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.cert-heading { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 12px; }
+.cert-title { font-size: 17px; font-weight: 800; letter-spacing: 0.02em; }
+.cert-description { margin: 0 0 4px; font-size: 14px; color: var(--ctd-muted); }
+
+@media (max-width: 520px) {
+  .cert-row { gap: 8px; }
+  .cert-title { font-size: 14px; }
+  .cert-description { font-size: 12px; }
+}

@@ -1,15 +1,8 @@
-.hud {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  padding: 16px;
-  max-width: 1200px;
-  margin: 0 auto;
-}
+/* The page header, shown in the HUD (TileLayout's header). */
 .hud-title { text-align: center; }
 .hud-title h1 {
   margin: 0 0 8px;
-  font-size: clamp(88px, 16vw, 144px);
+  font-size: clamp(44px, 8vw, 72px);
   line-height: 1.05;
   /* White with a black outline, as the tiles' labels are: the outline is drawn
      under the letters, so it widens them rather than eating into them. */
@@ -18,30 +11,3 @@
   paint-order: stroke fill;
 }
 .hud-title p { margin: 0; }
-/* Room above the row for the icons that spill past their tiles. */
-.hud-sizes { display: flex; flex-wrap: wrap; gap: 36px 24px; padding-top: 30px; align-items: end; justify-content: center; }
-
-/* The nudge and spotlight test. */
-.nudge-test {
-  background: var(--ctd-panel);
-  color: var(--ctd-text);
-  border-radius: 20px;
-  padding: 20px;
-  margin: 16px auto;
-  max-width: 1200px;
-}
-.nudge-test h2 { margin: 0 0 6px; }
-.nudge-test p { margin: 0 0 14px; color: var(--ctd-muted); max-width: 70ch; }
-.nudge-test p b { color: var(--ctd-text); }
-.nudge-test-row { display: flex; flex-wrap: wrap; gap: 10px; }
-.nudge-test-btn {
-  background: var(--ctd-surfaceOff);
-  color: var(--ctd-text);
-  border: 0;
-  border-radius: 10px;
-  padding: 10px 16px;
-  font: 700 15px/1 'Fredoka', system-ui, sans-serif;
-  cursor: pointer;
-}
-.nudge-test-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-.nudge-test-btn:focus-visible { outline: 3px solid var(--ctd-text); outline-offset: 2px; }

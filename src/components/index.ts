@@ -9,3 +9,7 @@ export type { TileLook } from './look';
 export { Surface } from './Surface';
 export { SURFACE_TEXTURE, SKY_TEXTURE } from './surfaceTexture';
 export { Backdrop } from './Backdrop';
+export {
+  ActionButton, CloseButton, Dialog, DifficultyTag, GroupLabel, IconSquare, Pips, ProgressBar, Row, RowList,
+} from './Dialog';
+export type { ActionTone, Difficulty } from './Dialog';

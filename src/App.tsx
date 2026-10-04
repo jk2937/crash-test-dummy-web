@@ -1,19 +1,19 @@
-import { useState } from 'react';
-import { Backdrop, Button, SafeArea, TileLayout, type TileSpec } from './components';
+import { useState, type ReactNode } from 'react';
+import { Backdrop, SafeArea, TileLayout, type TileSpec } from './components';
 import { PRESETS } from './pattern';
-import { TileLab } from './pages/TileLab';
+import { Certifications } from './pages/Certifications';
 import { Facility } from './pages/Facility';
-import { go, useRoute, type Route } from './hooks/useRoute';
+import { Home } from './pages/Home';
+import { Mockup, type MockSpec } from './pages/Mockup';
+import { TileLab } from './pages/TileLab';
+import { go, isRoute, useRoute, type Route } from './hooks/useRoute';
 import './App.css';
-
-// The texture the size demo wears.
-const TILE_TEXTURE = { ...PRESETS.polka, strength: 0.4 };
 
 // The HUD tiles each wear a different texture, in turn, at 0.4 strength.
 const TEXTURES = Object.values(PRESETS).map((p) => ({ ...p, strength: 0.4 }));
 
 // The HUD's tiles. Each says only which side it belongs on; TileLayout gives
-// it a slot in landscape and in portrait.
+// it a slot in landscape and in portrait. A tile opens the page of its id.
 const TILES: Omit<TileSpec, 'texture'>[] = [
   { id: 'certs', label: 'Certifications', icon: '📜', color: 'gold', region: 'left' },
   { id: 'home', label: 'Home', icon: '🏠', color: 'info', region: 'left' },
@@ -28,30 +28,74 @@ const TILES: Omit<TileSpec, 'texture'>[] = [
   { id: 'lab', label: 'Tile Lab', icon: '🧪', color: 'facility', region: 'right' },
 ];
 
-// Each page's header, shown in the HUD.
-const HEADERS: Record<Route, { title: string; blurb: string }> = {
-  home: { title: 'Be a Crash Test Dummy · UI kit', blurb: "The game's HUD, rebuilt for the web. Work in progress." },
-  lab: { title: 'Tile Lab', blurb: 'Every part of a tile, adjustable, with the result shown live. Your work is kept in this browser.' },
-  facility: { title: 'Facility', blurb: "The game's FACILITY screen, rebuilt from Surfaces. UI only: buying does nothing." },
+// The mockups: every tile with no real screen yet, in its own colour and icon.
+const MOCKS = ['rebirth', 'contracts', 'setup', 'fx', 'vehicles', 'collection', 'store'] as const;
+const mockSpec = (id: (typeof MOCKS)[number], seed: number): MockSpec => {
+  const tile = TILES.find((t) => t.id === id)!;
+  return { title: tile.label, color: tile.color ?? 'gold', icon: String(tile.icon), seed };
+};
+const MOCK_BLURB = 'A mockup: placeholder text, laid out from the kit, until the real screen is built.';
+
+interface Page {
+  title: string; // the header in the HUD
+  blurb: string; // the line under it
+  render: (home: { nudging: boolean; onStart: (spotlight: boolean) => void }) => ReactNode;
+}
+
+// Every page: its header and its content.
+const PAGES: Record<Route, Page> = {
+  home: {
+    title: 'Be a Crash Test Dummy · UI kit',
+    blurb: "The game's HUD, rebuilt for the web. Work in progress.",
+    render: (home) => <Home {...home} />,
+  },
+  lab: {
+    title: 'Tile Lab',
+    blurb: 'Every part of a tile, adjustable, with the result shown live. Your work is kept in this browser.',
+    render: () => <TileLab />,
+  },
+  facility: {
+    title: 'Facility',
+    blurb: "The game's FACILITY screen, rebuilt from Surfaces. UI only: buying does nothing.",
+    render: () => <Facility />,
+  },
+  certs: {
+    title: 'Certifications',
+    blurb: "The game's CERTIFICATIONS screen, rebuilt from Surfaces. UI only: claiming does nothing.",
+    render: () => <Certifications />,
+  },
+  ...mockPages(),
 };
 
-// A showcase of the toolkit, laid out like the game's HUD. HOME, TILE LAB and
-// FACILITY switch between the pages.
+function mockPages() {
+  const pages = {} as Record<(typeof MOCKS)[number], Page>;
+  MOCKS.forEach((id, i) => {
+    const spec = mockSpec(id, i + 1);
+    pages[id] = { title: spec.title, blurb: MOCK_BLURB, render: () => <Mockup key={id} spec={spec} /> };
+  });
+  return pages;
+}
+
+// A showcase of the toolkit, laid out like the game's HUD: each tile opens a
+// page, HOME the front one.
 export default function App() {
   const route = useRoute();
+  const page = PAGES[route];
 
   // As the game's VEHICLES tile does it. A nudge: the tile blinks until it is
   // pressed. A spotlight: the same, with everything else dimmed under a shade
-  // and the tile lifted above it -- one test button does each.
+  // and the tile lifted above it -- the home page's test buttons start each.
   const [nudging, setNudging] = useState(false);
   const [spotlit, setSpotlit] = useState(false);
-
   const start = (spotlight: boolean) => { setNudging(true); setSpotlit(spotlight); };
-  const pressVehicles = () => {
-    if (!nudging) return;
-    setNudging(false);
-    setSpotlit(false);
-    alert('VEHICLES pressed: the nudge is over.');
+  const open = (id: string) => {
+    if (id === 'vehicles' && nudging) {
+      setNudging(false);
+      setSpotlit(false);
+      alert('VEHICLES pressed: the nudge is over.');
+      return;
+    }
+    if (isRoute(id)) go(id);
   };
 
   return (
@@ -62,43 +106,20 @@ export default function App() {
         shade={spotlit}
         header={(
           <header className="hud-title">
-            <h1>{HEADERS[route].title}</h1>
-            <p>{HEADERS[route].blurb}</p>
+            <h1>{page.title}</h1>
+            <p>{page.blurb}</p>
           </header>
         )}
         tiles={TILES.map((t, i) => ({
           ...t,
           texture: TEXTURES[i % TEXTURES.length],
-          ...(t.id === 'vehicles' && { nudge: nudging, spotlight: spotlit, onClick: pressVehicles }),
-          ...(t.id === 'home' && { onClick: () => go('home') }),
-          ...(t.id === 'lab' && { onClick: () => go('lab') }),
-          ...(t.id === 'facility' && { onClick: () => go('facility') }),
+          onClick: () => open(t.id),
+          ...(t.id === 'vehicles' && { nudge: nudging, spotlight: spotlit }),
         }))}
       />
 
       <SafeArea>
-        {route === 'lab' ? <TileLab /> : route === 'facility' ? <Facility /> : (<>
-          <main className="hud">
-            <section className="hud-sizes" aria-label="Sizes">
-              <Button label="Small" icon="🚀" color="setup" texture={TILE_TEXTURE} size="small" />
-              <Button label="Medium" icon="🚀" color="setup" texture={TILE_TEXTURE} />
-              <Button label="Large" icon="🚀" color="setup" texture={TILE_TEXTURE} size="large" />
-              <Button label="Disabled" icon="🚀" color="setup" texture={TILE_TEXTURE} disabled />
-            </section>
-          </main>
-
-          <section className="nudge-test" aria-labelledby="nudge-title">
-            <h2 id="nudge-title">Nudge and spotlight</h2>
-            <p>
-              A <b>nudge</b> blinks VEHICLES until you press it. A <b>spotlight</b> does the same and dims everything
-              else around it.
-            </p>
-            <div className="nudge-test-row">
-              <button className="nudge-test-btn" onClick={() => start(true)} disabled={nudging}>Spotlight</button>
-              <button className="nudge-test-btn" onClick={() => start(false)} disabled={nudging}>Nudge</button>
-            </div>
-          </section>
-        </>)}
+        {page.render({ nudging, onStart: start })}
       </SafeArea>
     </>
   );
