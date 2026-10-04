@@ -143,15 +143,25 @@ export function TileLayout({ tiles, columns = 2, portraitRows = 2, shade = false
   // In landscape the top keeps the header, with the same space under it as
   // above it; in portrait it starts a margin below the HUD.
   const safeTop = portrait ? hudHeight + edge : header ? top + headerHeight + top : edge;
+
+  // Portrait: how far the HUD can slide up as the page scrolls, taking the
+  // header off the top of the screen, until the tops of the icons spilling
+  // from the top row of tiles are where the top of the header was. SafeArea
+  // drives the slide (--ctd-hud-shift); the HUD stops at this much.
+  const collapse = portrait && header
+    ? Math.max(0, headerHeight + gap + spacer + gap - iconSpill)
+    : 0;
+
   useLayoutEffect(() => {
     const safe = portrait
       ? { top: safeTop, right: edge, bottom: edge, left: edge }
       : { top: safeTop, right: tilesAcross, bottom: edge, left: tilesAcross };
     const root = document.documentElement;
     for (const [side, px] of Object.entries(safe)) root.style.setProperty(`--ctd-safe-${side}`, `${px}px`);
+    root.style.setProperty('--ctd-hud-collapse', `${collapse}px`);
     // Which shape the HUD is in, for SafeArea.
     root.dataset.ctdHud = portrait ? 'portrait' : 'landscape';
-  }, [portrait, safeTop, tilesAcross, edge]);
+  }, [portrait, safeTop, tilesAcross, edge, collapse]);
 
   const slot = (id: string): CSSProperties => {
     // A spotlit tile's slot rises above the shade with it.

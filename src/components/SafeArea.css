@@ -11,15 +11,20 @@
   padding: 16px;
 }
 
-/* Portrait: a panel from just under the tiles to the bottom of the screen,
-   scrolling inside itself. Its top edge already sits a margin below the
-   tiles, so the margin is not added again inside. */
+/* Portrait: a panel from as high as the tiles will slide to, to the bottom of
+   the screen, scrolling inside itself. The band at its top is the slide (see
+   SafeArea.tsx), so to start with the page sits a margin below the tiles. */
 :root[data-ctd-hud='portrait'] .ctd-safe-area {
   position: fixed;
-  inset: var(--ctd-safe-top, 0px) 0 0 0;
+  inset: calc(var(--ctd-safe-top, 0px) - var(--ctd-hud-collapse, 0px)) 0 0 0;
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding-top: 0;
+  padding-top: var(--ctd-hud-collapse, 0px);
+}
+/* The page is at least the panel's height under the band, so it can always
+   scroll far enough for the HUD to slide all the way. */
+:root[data-ctd-hud='portrait'] .ctd-safe-surface {
+  min-height: calc(100dvh - var(--ctd-safe-top, 0px) + var(--ctd-hud-collapse, 0px) - var(--ctd-safe-bottom, 0px));
 }
 @media (max-width: 520px) {
   .ctd-safe-surface { padding: 12px 10px; }

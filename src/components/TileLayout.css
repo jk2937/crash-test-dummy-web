@@ -14,7 +14,14 @@
   padding-left: var(--edge);
   padding-right: var(--edge);
 }
-.tile-layout-portrait { justify-content: center; }
+.tile-layout-portrait {
+  justify-content: center;
+  /* Slides up as the page scrolls (SafeArea sets --ctd-hud-shift), by no more
+     than the header takes (--ctd-hud-collapse). Moved by `top`, not a
+     transform: a transform would make the HUD the frame for the shade inside
+     it, and the shade must cover the whole screen. */
+  top: calc(-1 * min(var(--ctd-hud-shift, 0px), var(--ctd-hud-collapse, 0px)));
+}
 .tile-slot {
   /* Positioned so the slot's z-index applies: rows nearer the top sit above
      the ones below, so an icon spilling up never covers the label above it. */
