@@ -23,7 +23,7 @@
   transform-origin: center;
   transition: transform 0.12s ease;
 }
-.ctd-btn:hover:not(:disabled) { transform: scale(1.06); }
+.ctd-btn:hover:not(:disabled) { transform: scale(1.06); z-index: 1; }
 .ctd-btn:active:not(:disabled) { transform: scale(0.97); }
 .ctd-btn:focus-visible { outline: 3px solid var(--ctd-text); outline-offset: 3px; }
 .ctd-btn:disabled { filter: grayscale(0.8); opacity: 0.6; cursor: not-allowed; }
@@ -34,10 +34,11 @@
 
 .ctd-btn-icon {
   position: absolute;
-  inset: 0 0 24%;
+  /* Bigger than the tile: it spills past the top and sides on purpose. */
+  inset: -34% -14% 18%;
   display: grid;
   place-items: center;
-  font-size: 50cqw;
+  font-size: 82cqw;
   line-height: 1;
   transform: rotate(-12deg);
   /* A hard offset shadow, the way the game's icons sit on their tiles,

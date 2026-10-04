@@ -42,7 +42,7 @@
 .pg-warn { margin: 0; color: var(--ctd-gold); font-size: 13px; }
 
 .pg-preview { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
-.pg-tiles { display: flex; flex-wrap: wrap; gap: 12px; }
+.pg-tiles { display: flex; flex-wrap: wrap; gap: 36px 16px; padding-top: 30px; } /* room for the spilling icons */
 .pg-panel {
   min-height: 120px;
   border-radius: 16px;
