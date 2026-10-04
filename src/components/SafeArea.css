@@ -1,11 +1,14 @@
 .ctd-safe-area {
-  min-height: 100vh;
-  min-height: 100dvh;
   padding:
     var(--ctd-safe-top, 0px)
     var(--ctd-safe-right, 0px)
     var(--ctd-safe-bottom, 0px)
     var(--ctd-safe-left, 0px);
+}
+/* At least the height of the safe area, growing with its content. */
+.ctd-safe-surface {
+  min-height: calc(100dvh - var(--ctd-safe-top, 0px) - var(--ctd-safe-bottom, 0px));
+  padding: 16px;
 }
 
 /* Portrait: a panel from just under the tiles to the bottom of the screen,
@@ -14,8 +17,10 @@
 :root[data-ctd-hud='portrait'] .ctd-safe-area {
   position: fixed;
   inset: var(--ctd-safe-top, 0px) 0 0 0;
-  min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
   padding-top: 0;
+}
+@media (max-width: 520px) {
+  .ctd-safe-surface { padding: 12px 10px; }
 }

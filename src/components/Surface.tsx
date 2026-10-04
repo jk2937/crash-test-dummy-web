@@ -15,7 +15,7 @@ interface SurfaceProps {
   // The ring's colour, and the fill's unless `fill` is given.
   color: string;
   fill?: string;
-  edge?: number; // px, the width of the outline and of the ring
+  edge?: number; // px, the width of the outline and of the ring; 0 for neither
   radius?: number; // px, the outer corner
   texture?: PatternSpec | null;
   as?: ElementType;
@@ -46,7 +46,10 @@ export function Surface({
     return () => observer.disconnect();
   }, []);
 
-  const image = texture ? renderFitted(texture, size[0], size[1]) : 'none';
+  const fitted = texture ? renderFitted(texture, size[0], size[1]) : null;
+  const textureStyle: CSSProperties = fitted
+    ? { backgroundImage: fitted.image, backgroundSize: fitted.size, backgroundPosition: fitted.position }
+    : { backgroundImage: 'none' };
   const vars = {
     '--surface-ring': color,
     '--surface-fill': fill ?? color,
@@ -57,7 +60,7 @@ export function Surface({
 
   return (
     <Tag className={`ctd-surface ${className}`} style={vars} {...rest}>
-      <span ref={fillRef} className="ctd-surface-texture" style={{ backgroundImage: image }} aria-hidden />
+      <span ref={fillRef} className="ctd-surface-texture" style={textureStyle} aria-hidden />
       {children}
     </Tag>
   );

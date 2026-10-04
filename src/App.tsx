@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, SafeArea, TileLayout, type TileSpec } from './components';
+import { Backdrop, Button, SafeArea, TileLayout, type TileSpec } from './components';
 import { PRESETS } from './pattern';
 import { TileLab } from './pages/TileLab';
 import { Facility } from './pages/Facility';
@@ -49,6 +49,8 @@ export default function App() {
 
   return (
     <>
+      <Backdrop />
+
       <TileLayout
         shade={spotlit}
         tiles={TILES.map((t, i) => ({

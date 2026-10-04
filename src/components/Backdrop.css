@@ -1,0 +1,6 @@
+.ctd-surface.ctd-backdrop {
+  position: fixed;
+  inset: 0;
+  /* Under everything else on the page. */
+  z-index: -1;
+}

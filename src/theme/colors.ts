@@ -7,6 +7,10 @@ export const colors = {
   text: '#f0eee8',
   muted: '#96948e',
 
+  // The web kit's own: the sky behind everything, and the off-white page.
+  sky: '#8fcdf2',
+  paper: '#d9c9b0',
+
   // The currency.
   data: '#e8b61e',
   // The bright gold the Test Data readout, buy buttons and VEHICLES tile share.
