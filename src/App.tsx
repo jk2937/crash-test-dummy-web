@@ -4,8 +4,11 @@ import { PRESETS } from './pattern';
 import { Playground } from './pages/Playground';
 import './App.css';
 
-// The texture the HUD tiles wear.
-const TILE_TEXTURE = PRESETS.polka;
+// The texture the size demo wears.
+const TILE_TEXTURE = { ...PRESETS.polka, strength: 0.4 };
+
+// The HUD tiles each wear a different texture, in turn, at 0.4 strength.
+const TEXTURES = Object.values(PRESETS).map((p) => ({ ...p, strength: 0.4 }));
 
 // The HUD's tiles. Each says only which side it belongs on; TileLayout gives
 // it a slot in landscape and in portrait.
@@ -40,19 +43,20 @@ export default function App() {
 
   return (
     <>
+      <TileLayout
+        tiles={TILES.map((t, i) => ({
+          ...t,
+          texture: TEXTURES[i % TEXTURES.length],
+          ...(t.id === 'vehicles' && { nudge: nudging, spotlight: spotlit, onClick: pressVehicles }),
+        }))}
+      >
+        <header className="hud-title">
+          <h1>Be a Crash Test Dummy · UI kit</h1>
+          <p>The game's HUD, rebuilt for the web. Work in progress.</p>
+        </header>
+      </TileLayout>
+
       <main className="hud">
-        <TileLayout
-          tiles={TILES.map((t) => ({
-            ...t,
-            texture: TILE_TEXTURE,
-            ...(t.id === 'vehicles' && { nudge: nudging, spotlight: spotlit, onClick: pressVehicles }),
-          }))}
-        >
-          <header className="hud-title">
-            <h1>Be a Crash Test Dummy · UI kit</h1>
-            <p>The game's HUD, rebuilt for the web. Work in progress.</p>
-          </header>
-        </TileLayout>
         <section className="hud-sizes" aria-label="Sizes">
           <Button label="Small" icon="🚀" color="setup" texture={TILE_TEXTURE} size="small" />
           <Button label="Medium" icon="🚀" color="setup" texture={TILE_TEXTURE} />

@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactNode } from 'react';
+import { useSyncExternalStore, type CSSProperties, type ReactNode } from 'react';
 import { Button, type ButtonProps } from './Button';
 import './TileLayout.css';
 
@@ -21,57 +21,110 @@ interface TileLayoutProps {
   children?: ReactNode;
 }
 
+// The game's HUD measurements, in design units: the units the layout was
+// authored in, turned into pixels by a scale that follows the screen.
+const TILE = 76;
+const SPACING = 14; // the gap between tiles, and the margin to the screen's edge
+const SMALL_SPACING = 8; // the same, on a small screen
+const SMALL_EDGE = 520; // a screen whose short side is at most this is small
+const FOOTPRINT = { x: 320, y: 440 }; // what must always fit on screen
+
+// Pixels per design unit for a screen: from 1 up to 1.5 as the screen grows
+// (1.5 from 1280 x 720), never above 1 on a small screen, and never so big the
+// footprint stops fitting.
+function scaleFor(width: number, height: number, small: boolean) {
+  const fit = Math.min(width / FOOTPRINT.x, height / FOOTPRINT.y);
+  if (small) return Math.min(1, fit);
+  const natural = Math.min(Math.max(Math.min(width / 1280, height / 720) * 1.5, 1), 1.5);
+  return Math.min(natural, fit);
+}
+
+function readViewport() {
+  // The width the page can lay out in: the window without its scrollbar.
+  return `${document.documentElement.clientWidth}x${window.innerHeight}`;
+}
+function subscribe(onChange: () => void) {
+  window.addEventListener('resize', onChange);
+  return () => window.removeEventListener('resize', onChange);
+}
+
 // Places tiles in slots, for both screen shapes, from nothing more than each
-// tile's region. Every tile gets a slot in each layout -- worked out here --
-// and CSS picks the layout for the screen's shape, so turning a phone needs
-// no script at all.
+// tile's region, spaced as the game spaces its HUD: an even gap between every
+// tile, and a margin to the screen's edges.
 //
 //   Landscape: each region is a grid `columns` wide, filled row by row: left
-//              at the top left, right at the top right.
-//   Portrait:  every tile in one grid at the top, centred, `portraitRows`
-//              deep (left's tiles first, then right's), shrinking to fit the
-//              screen's width.
+//              at the top left of the screen, right at the top right.
+//   Portrait:  (taller than wide) every tile in one grid at the top, centred,
+//              `portraitRows` deep (left's tiles first, then right's); tiles
+//              and gaps shrink so a row fits the screen's width.
 export function TileLayout({ tiles, columns = 2, portraitRows = 2, children }: TileLayoutProps) {
+  const [width, height] = useSyncExternalStore(subscribe, readViewport).split('x').map(Number);
+
+  const portrait = width < height;
+  const small = Math.min(width, height) <= SMALL_EDGE;
+  const scale = scaleFor(width, height, small);
+  const spacing = small ? SMALL_SPACING : SPACING;
+  const edge = spacing * scale;
+
   const left = tiles.filter((t) => t.region === 'left');
   const right = tiles.filter((t) => t.region === 'right');
-  const leftRows = Math.ceil(left.length / columns);
-  const rightRows = Math.ceil(right.length / columns);
-  const landscapeRows = Math.max(leftRows, rightRows, 1);
+  const ordered = [...left, ...right];
+  const landscapeRows = Math.max(Math.ceil(left.length / columns), Math.ceil(right.length / columns), 1);
   const portraitColumns = Math.max(1, Math.ceil(tiles.length / portraitRows));
 
-  const slots = new Map<string, CSSProperties>();
-  const place = (list: TileSpec[], firstColumn: number) =>
-    list.forEach((t, i) => {
-      slots.set(t.id, {
-        '--land-col': firstColumn + (i % columns),
-        '--land-row': 1 + Math.floor(i / columns),
-      } as CSSProperties);
-    });
-  place(left, 1);
-  // The right region's columns come after the left's and the gap between them.
-  place(right, columns + 2);
-  [...left, ...right].forEach((t, i) => {
-    Object.assign(slots.get(t.id)!, {
-      '--port-col': 1 + (i % portraitColumns),
-      '--port-row': 1 + Math.floor(i / portraitColumns),
-    });
-  });
+  // In portrait the tiles and the gaps between them shrink together until a
+  // row fits between the margins; never bigger than their own size.
+  const across = portraitColumns * TILE + (portraitColumns - 1) * spacing;
+  const shrink = portrait ? Math.min(Math.max((width / scale - 2 * spacing) / across, 0.3), 1) : 1;
+  const tile = TILE * scale * shrink;
+  const gap = spacing * scale * shrink;
+
+  const slot = (id: string): CSSProperties => {
+    // A spotlit tile's slot rises above the shade with it.
+    const lifted = ordered.find((t) => t.id === id)?.spotlight ? { zIndex: 'calc(var(--ctd-shade-z) + 1)' } : {};
+    if (portrait) {
+      const i = ordered.findIndex((t) => t.id === id);
+      return { gridColumn: 1 + (i % portraitColumns), gridRow: 1 + Math.floor(i / portraitColumns), zIndex: portraitRows - Math.floor(i / portraitColumns), ...lifted };
+    }
+    const list = left.some((t) => t.id === id) ? left : right;
+    const i = list.findIndex((t) => t.id === id);
+    // The right region's columns come after the left's and the space between.
+    const first = list === left ? 1 : columns + 2;
+    const row = Math.floor(i / columns);
+    return { gridColumn: first + (i % columns), gridRow: 1 + row, zIndex: landscapeRows - row, ...lifted };
+  };
 
   const layoutStyle = {
-    '--columns': columns,
-    '--land-rows': landscapeRows,
-    '--port-columns': portraitColumns,
-    '--port-rows': portraitRows,
+    '--tile': `${tile}px`,
+    '--gap': `${gap}px`,
+    '--edge': `${edge}px`,
+    // The game starts its tiles one margin and one gap from the top.
+    paddingTop: `${edge + gap}px`,
+    gridTemplateColumns: portrait
+      ? `repeat(${portraitColumns}, var(--tile))`
+      : `repeat(${columns}, var(--tile)) 1fr repeat(${columns}, var(--tile))`,
+    gridTemplateRows: portrait
+      ? `repeat(${portraitRows}, var(--tile)) auto`
+      : `repeat(${landscapeRows}, var(--tile))`,
   } as CSSProperties;
 
   return (
-    <div className="tile-layout" style={layoutStyle}>
-      {[...left, ...right].map(({ id, region, ...button }) => (
-        <div key={id} className={`tile-slot tile-slot-${region}`} style={slots.get(id)}>
+    <div className={`tile-layout ${portrait ? 'tile-layout-portrait' : 'tile-layout-landscape'}`} style={layoutStyle}>
+      {ordered.map(({ id, region: _region, ...button }) => (
+        <div key={id} className="tile-slot" style={slot(id)}>
           <Button {...button} />
         </div>
       ))}
-      {children && <div className="tile-layout-middle">{children}</div>}
+      {children && (
+        <div
+          className="tile-layout-middle"
+          style={portrait
+            ? { gridColumn: '1 / -1', gridRow: portraitRows + 1 }
+            : { gridColumn: columns + 1, gridRow: `1 / span ${landscapeRows}` }}
+        >
+          {children}
+        </div>
+      )}
     </div>
   );
 }
