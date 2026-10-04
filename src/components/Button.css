@@ -15,8 +15,8 @@
   border-radius: 26%;
   background:
     var(--ctd-texture, none) 0 0 / var(--ctd-texture-size, auto) repeat,
-    /* The shine: light at the top, fading out, a touch of shade at the foot. */
-    linear-gradient(to bottom, rgb(255 255 255 / 0.38), rgb(255 255 255 / 0) 55%, rgb(0 0 0 / 0.12)),
+    /* The shine: a touch of shade at the top, fading out, light at the foot. */
+    linear-gradient(to top, rgb(255 255 255 / 0.38), rgb(255 255 255 / 0) 55%, rgb(0 0 0 / 0.12)),
     var(--tile);
   box-shadow: inset 0 0 0 var(--edge) var(--tile);
   color: #fff;
@@ -54,7 +54,7 @@
   transform: translateY(calc(-1 * var(--label-space, 0px))) rotate(-12deg);
   /* A hard offset shadow, the way the game's icons sit on their tiles,
      plus a soft one under it so it reads on light and dark fills alike. */
-  filter: drop-shadow(6px 10px 0 rgb(0 0 0 / 0.45)) drop-shadow(0 4px 6px rgb(0 0 0 / 0.25));
+  filter: drop-shadow(4.5px 7.5px 0 rgb(0 0 0 / 0.45)) drop-shadow(0 3px 6px rgb(0 0 0 / 0.25));
   pointer-events: none;
 }
 .ctd-btn-label {
