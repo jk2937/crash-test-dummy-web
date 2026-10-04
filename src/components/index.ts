@@ -4,3 +4,5 @@ export { TileLayout } from './TileLayout';
 export type { TileSpec, Region } from './TileLayout';
 export { Shade } from './Shade';
 export { SafeArea } from './SafeArea';
+export { DEFAULT_LOOK, lookStyle } from './look';
+export type { TileLook } from './look';

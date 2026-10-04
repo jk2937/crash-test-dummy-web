@@ -20,14 +20,14 @@
   --radius: 28px;
   /* The label clears the coloured ring by 4px. */
   padding: 0 var(--edge) calc(var(--edge) + 4px);
-  /* The dark outline. The coloured ring inside it belongs to the fill. */
-  border: var(--edge) solid var(--ctd-panel);
+  /* The dark outline. The coloured ring inside it belongs to the fill. Every
+     --look-* property is a TileLook setting (see look.ts); unset, each falls
+     back to the HUD's own look. */
+  border: var(--edge) solid var(--look-outline, var(--ctd-panel));
   border-radius: var(--radius);
   background: none;
   color: #fff;
   font: 800 14.5px/1 'Fredoka', system-ui, sans-serif;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
   cursor: pointer;
   /* The icon is sized off the tile's own width (cqw), whatever the label size. */
   container-type: inline-size;
@@ -48,9 +48,12 @@
   background:
     var(--ctd-texture, none) 0 0 / var(--ctd-texture-size, auto) repeat,
     /* The shine: a touch of shade at the top, fading out, light at the foot. */
-    linear-gradient(to top, rgb(255 255 255 / 0.304), rgb(255 255 255 / 0) 55%, rgb(0 0 0 / 0.096)),
+    linear-gradient(to top,
+      rgb(255 255 255 / var(--look-shine-light, 0.304)),
+      rgb(255 255 255 / 0) var(--look-shine-fade, 55%),
+      rgb(0 0 0 / var(--look-shine-shade, 0.096))),
     var(--tile);
-  box-shadow: inset 0 0 0 var(--edge) var(--tile);
+  box-shadow: inset 0 0 0 calc(var(--edge) * var(--look-ring, 1)) var(--tile);
   opacity: var(--ctd-nudge-fade);
 }
 /* A tile's icon spills over its neighbours: the one under the pointer comes to
@@ -64,16 +67,17 @@
 .ctd-btn-small { width: 72px; height: 72px; font-size: 11px; --edge: 4px; --radius: 19px; --label-space: 19px; }
 .ctd-btn-medium {
   /* Medium tiles take the size of the slot they are in (--ctd-tile-size, set
-     by TileLayout), 112px otherwise; the label, the corners and the icon's
-     lift scale with it, and so do the outlines, so a smaller tile is the same
-     tile, smaller. */
-  --size: var(--ctd-tile-size, 112px);
-  --edge: calc(var(--size) * 0.054);
+     by TileLayout), else their look's size, else 112px; the label, the corners
+     and the icon's lift scale with it, and so do the outlines, so a smaller
+     tile is the same tile, smaller. */
+  --size: var(--ctd-tile-size, var(--look-size, 112px));
+  --edge: calc(var(--size) * var(--look-edge, 0.054));
   width: var(--size);
   height: var(--size);
-  font-size: calc(var(--size) * 0.13);
-  --radius: calc(var(--size) * 0.25);
-  --label-space: calc(var(--size) * 0.22);
+  font-size: calc(var(--size) * var(--look-label, 0.13));
+  --radius: calc(var(--size) * var(--look-radius, 0.25));
+  /* The label's height and the padding under it. */
+  --label-space: calc(var(--size) * var(--look-label, 0.13) + var(--edge) + 4px);
 }
 .ctd-btn-large { width: 140px; height: 140px; font-size: 17px; --radius: 35px; --label-space: 27px; }
 
@@ -98,13 +102,18 @@
   inset: -25%;
   display: grid;
   place-items: center;
-  font-size: 100cqw;
+  font-size: calc(100cqw * var(--look-icon, 1));
   line-height: 1;
   /* Centred in the space above the label, and tilted. */
-  transform: translateY(calc(-1 * var(--label-space, 0px))) rotate(-12deg);
+  transform:
+    translateY(calc(-1 * var(--label-space, 0px) * var(--look-lift, 1)))
+    rotate(var(--look-tilt, -12deg));
   /* A hard offset shadow, the way the game's icons sit on their tiles,
      plus a soft one under it so it reads on light and dark fills alike. */
-  filter: drop-shadow(4.5px 7.5px 0 rgb(0 0 0 / 0.45)) drop-shadow(0 3px 6px rgb(0 0 0 / 0.25));
+  filter:
+    drop-shadow(var(--look-shadow-x, 4.5px) var(--look-shadow-y, 7.5px) var(--look-shadow-blur, 0px)
+      rgb(0 0 0 / var(--look-shadow-alpha, 0.45)))
+    drop-shadow(0 calc(var(--look-shadow-y, 7.5px) * 0.4) 6px rgb(0 0 0 / calc(var(--look-shadow-alpha, 0.45) * 0.55)));
   pointer-events: none;
   opacity: var(--ctd-nudge-fade);
 }
@@ -114,7 +123,9 @@
      tuned so the longest HUD label, CERTIFICATIONS, just fits. */
   font-size: min(1em, calc(175cqw / var(--chars, 1)));
   white-space: nowrap;
-  -webkit-text-stroke: 3px var(--ctd-panel);
+  text-transform: var(--look-case, uppercase);
+  letter-spacing: var(--look-spacing, 0.02em);
+  -webkit-text-stroke: var(--look-stroke, 3px) var(--look-outline, var(--ctd-panel));
   paint-order: stroke fill;
   opacity: var(--ctd-nudge-fade);
 }

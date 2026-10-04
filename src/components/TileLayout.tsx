@@ -40,8 +40,15 @@ function scaleFor(width: number, height: number, small: boolean) {
 }
 
 function readViewport() {
-  // The width the page can lay out in: the window without its scrollbar.
-  return `${document.documentElement.clientWidth}x${window.innerHeight}`;
+  // The window's own size, scrollbar included. Not the width without the
+  // scrollbar: the layout decides whether the page scrolls (portrait never
+  // does), so measuring around the scrollbar fed back into itself -- on a
+  // nearly square window, a scrollbar made it portrait, portrait removed the
+  // scrollbar, which made it landscape, which brought the scrollbar back --
+  // and React gave up and blanked the page. The window's size does not move
+  // when the scrollbar comes and goes.
+  // At least 1px each way: a minimised window can report 0, which no layout fits.
+  return `${Math.max(1, window.innerWidth)}x${Math.max(1, window.innerHeight)}`;
 }
 function subscribe(onChange: () => void) {
   window.addEventListener('resize', onChange);
