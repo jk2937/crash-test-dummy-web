@@ -23,7 +23,7 @@ export default function App() {
     <>
       <main className="hud">
         <header className="hud-title">
-          <h1>Crash Test Dummy · UI kit</h1>
+          <h1>Be a Crash Test Dummy · UI kit</h1>
           <p>The game's HUD, rebuilt for the web. Work in progress.</p>
         </header>
         <section className="hud-grid hud-left" aria-label="Left menu">

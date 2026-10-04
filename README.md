@@ -1,6 +1,6 @@
-# Crash Test Dummy UI
+# Be a Crash Test Dummy UI
 
-The HUD of the Roblox game *Crash Test Dummy*, rebuilt as a React + TypeScript UI kit.
+The HUD of the Roblox game *Be a Crash Test Dummy*, rebuilt as a React + TypeScript UI kit.
 
 **Live:** https://jk2937.github.io/crash-test-dummy-web/
 
