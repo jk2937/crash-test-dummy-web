@@ -22,8 +22,8 @@
   pointer-events: auto;
   --ctd-tile-size: var(--tile);
 }
-/* The header: in landscape it starts at the top of the middle column and may
-   run taller than a row of tiles; in portrait it is a row of its own. */
+/* The header: a row of its own above the tiles in portrait; on the page in
+   landscape (below). */
 .tile-layout-header {
   align-self: start;
   min-width: 0;
@@ -31,5 +31,12 @@
   padding: 0 var(--edge);
 }
 .tile-layout-portrait .tile-layout-header { padding: 0; }
+/* Landscape: placed on the page (its top, left and right set inline), so it
+   scrolls with it, under the HUD. */
+.tile-layout-header-page {
+  position: absolute;
+  padding: 0;
+  pointer-events: auto;
+}
 /* The shade covers the screen and takes every click under the HUD. */
 .tile-layout .ctd-shade { pointer-events: auto; }

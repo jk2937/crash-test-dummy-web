@@ -76,8 +76,9 @@ function subscribe(onChange: () => void) {
 //              and gaps shrink so a row fits the screen's width.
 //
 // A header, if given, takes the top of the space between the regions in
-// landscape, and a row of its own above the tiles in portrait; the safe area
-// keeps clear of it too.
+// landscape -- part of the page there, scrolling away with it -- and a row of
+// its own above the tiles in portrait, fixed with them. Either way it has the
+// same space below it as above, and the safe area keeps clear of it.
 export function TileLayout({ tiles, columns = 2, portraitRows = 2, shade = false, header }: TileLayoutProps) {
   const [width, height] = useSyncExternalStore(subscribe, readViewport).split('x').map(Number);
 
@@ -106,35 +107,51 @@ export function TileLayout({ tiles, columns = 2, portraitRows = 2, shade = false
   useLayoutEffect(() => {
     const el = headerRef.current;
     if (!el) { setHeaderHeight(0); return; }
-    const measure = () => setHeaderHeight(Math.ceil(el.getBoundingClientRect().height));
+    const measure = () => setHeaderHeight(el.getBoundingClientRect().height);
     measure();
     const observer = new ResizeObserver(measure);
     observer.observe(el);
     return () => observer.disconnect();
-  }, [header]);
-  // In portrait, the header's row and the space under it: a gap, and room for
-  // the icons, which spill up past the tops of their tiles (by about a third
-  // of a tile, with their lift).
+  }, [header, portrait]);
+
+  // The HUD's own height, as drawn: in portrait the page starts a margin below
+  // it. Measured rather than added up, so it is exactly where the tiles end.
+  const hudRef = useRef<HTMLDivElement>(null);
+  const [hudHeight, setHudHeight] = useState(0);
+  useLayoutEffect(() => {
+    const el = hudRef.current;
+    if (!el) return;
+    const measure = () => setHudHeight(el.getBoundingClientRect().height);
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  const block = (n: number) => n * tile + (n - 1) * gap;
+  const top = edge + gap; // the game starts its tiles a margin and a gap down
+  const tilesAcross = edge + block(columns) + edge;
+  // The icons spill up past the tops of their tiles, by about a third of a
+  // tile with their lift. Under a portrait header, the space down to them
+  // matches the space above the header: the grid's own gaps either side of a
+  // spacer row, and the spacer makes up the rest.
   const iconSpill = tile * 0.3;
-  const headerRow = header ? headerHeight + gap + iconSpill : 0;
+  const spacer = Math.max(0, top + iconSpill - 2 * gap);
 
   // The safe area (see above). Every edge keeps the game's margin; the edges
   // the tiles stand along keep the tiles too, and a second margin past them.
-  // The top keeps the header too, in either shape.
-  const block = (n: number) => n * tile + (n - 1) * gap;
-  const top = edge + gap; // the game starts its tiles a margin and a gap down
-  const tilesDown = top + headerRow + block(portraitRows) + edge;
-  const tilesAcross = edge + block(columns) + edge;
-  const headerDown = header ? top + headerHeight + edge : edge;
+  // In landscape the top keeps the header, with the same space under it as
+  // above it; in portrait it starts a margin below the HUD.
+  const safeTop = portrait ? hudHeight + edge : header ? top + headerHeight + top : edge;
   useLayoutEffect(() => {
     const safe = portrait
-      ? { top: tilesDown, right: edge, bottom: edge, left: edge }
-      : { top: headerDown, right: tilesAcross, bottom: edge, left: tilesAcross };
+      ? { top: safeTop, right: edge, bottom: edge, left: edge }
+      : { top: safeTop, right: tilesAcross, bottom: edge, left: tilesAcross };
     const root = document.documentElement;
     for (const [side, px] of Object.entries(safe)) root.style.setProperty(`--ctd-safe-${side}`, `${px}px`);
     // Which shape the HUD is in, for SafeArea.
     root.dataset.ctdHud = portrait ? 'portrait' : 'landscape';
-  }, [portrait, tilesDown, tilesAcross, headerDown, edge]);
+  }, [portrait, safeTop, tilesAcross, edge]);
 
   const slot = (id: string): CSSProperties => {
     // A spotlit tile's slot rises above the shade with it.
@@ -142,7 +159,7 @@ export function TileLayout({ tiles, columns = 2, portraitRows = 2, shade = false
     if (portrait) {
       const i = ordered.findIndex((t) => t.id === id);
       const row = Math.floor(i / portraitColumns);
-      // Below the header's row and the icons' room under it, if there is one.
+      // Below the header's row and the spacer under it, if there is one.
       return { gridColumn: 1 + (i % portraitColumns), gridRow: (header ? 3 : 1) + row, zIndex: portraitRows - row, ...lifted };
     }
     const list = left.some((t) => t.id === id) ? left : right;
@@ -162,30 +179,38 @@ export function TileLayout({ tiles, columns = 2, portraitRows = 2, shade = false
       ? `repeat(${portraitColumns}, var(--tile))`
       : `repeat(${columns}, var(--tile)) 1fr repeat(${columns}, var(--tile))`,
     gridTemplateRows: portrait
-      ? `${header ? `auto ${iconSpill}px ` : ''}repeat(${portraitRows}, var(--tile))`
+      ? `${header ? `auto ${spacer}px ` : ''}repeat(${portraitRows}, var(--tile))`
       : `repeat(${landscapeRows}, var(--tile))`,
   } as CSSProperties;
 
   return (
-    <div className={`tile-layout ${portrait ? 'tile-layout-portrait' : 'tile-layout-landscape'}`} style={layoutStyle}>
-      {ordered.map(({ id, region: _region, ...button }) => (
-        <div key={id} className="tile-slot" style={slot(id)}>
-          <Button {...button} />
-        </div>
-      ))}
-      {header && (
+    <>
+      <div ref={hudRef} className={`tile-layout ${portrait ? 'tile-layout-portrait' : 'tile-layout-landscape'}`} style={layoutStyle}>
+        {ordered.map(({ id, region: _region, ...button }) => (
+          <div key={id} className="tile-slot" style={slot(id)}>
+            <Button {...button} />
+          </div>
+        ))}
+        {/* Portrait: the header is fixed with the HUD, above the tiles. */}
+        {header && portrait && (
+          <div ref={headerRef} className="tile-layout-header" style={{ gridColumn: '1 / -1', gridRow: 1 }}>
+            {header}
+          </div>
+        )}
+        {/* Inside the HUD, so the spotlit tile's slot can rise above it. */}
+        <Shade show={shade} />
+      </div>
+      {/* Landscape: the header belongs to the page, so it scrolls away with it,
+          at the top of the space between the two regions. */}
+      {header && !portrait && (
         <div
           ref={headerRef}
-          className="tile-layout-header"
-          style={portrait
-            ? { gridColumn: '1 / -1', gridRow: 1 }
-            : { gridColumn: columns + 1, gridRow: 1 }}
+          className="tile-layout-header tile-layout-header-page"
+          style={{ top: `${top}px`, left: `${tilesAcross}px`, right: `${tilesAcross}px` }}
         >
           {header}
         </div>
       )}
-      {/* Inside the HUD, so the spotlit tile's slot can rise above it. */}
-      <Shade show={shade} />
-    </div>
+    </>
   );
 }
