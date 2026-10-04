@@ -3,7 +3,7 @@ import { Backdrop, Button, SafeArea, TileLayout, type TileSpec } from './compone
 import { PRESETS } from './pattern';
 import { TileLab } from './pages/TileLab';
 import { Facility } from './pages/Facility';
-import { go, useRoute } from './hooks/useRoute';
+import { go, useRoute, type Route } from './hooks/useRoute';
 import './App.css';
 
 // The texture the size demo wears.
@@ -27,6 +27,13 @@ const TILES: Omit<TileSpec, 'texture'>[] = [
   { id: 'store', label: 'Store', icon: '🛒', color: 'live', region: 'right' },
   { id: 'lab', label: 'Tile Lab', icon: '🧪', color: 'facility', region: 'right' },
 ];
+
+// Each page's header, shown in the HUD.
+const HEADERS: Record<Route, { title: string; blurb: string }> = {
+  home: { title: 'Be a Crash Test Dummy · UI kit', blurb: "The game's HUD, rebuilt for the web. Work in progress." },
+  lab: { title: 'Tile Lab', blurb: 'Every part of a tile, adjustable, with the result shown live. Your work is kept in this browser.' },
+  facility: { title: 'Facility', blurb: "The game's FACILITY screen, rebuilt from Surfaces. UI only: buying does nothing." },
+};
 
 // A showcase of the toolkit, laid out like the game's HUD. HOME, TILE LAB and
 // FACILITY switch between the pages.
@@ -55,8 +62,8 @@ export default function App() {
         shade={spotlit}
         header={(
           <header className="hud-title">
-            <h1>Be a Crash Test Dummy · UI kit</h1>
-            <p>The game's HUD, rebuilt for the web. Work in progress.</p>
+            <h1>{HEADERS[route].title}</h1>
+            <p>{HEADERS[route].blurb}</p>
           </header>
         )}
         tiles={TILES.map((t, i) => ({

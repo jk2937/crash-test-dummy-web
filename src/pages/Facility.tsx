@@ -45,7 +45,7 @@ export function Facility() {
       >
         <header className="fac-head">
           <div>
-            <h1 id="fac-title" className="fac-title">FACILITY</h1>
+            <h2 id="fac-title" className="fac-title">FACILITY</h2>
             <p className="fac-balance"><b>63.6K</b> test data</p>
           </div>
           <button className="fac-close" aria-label="Close" onClick={() => go('home')}>X</button>

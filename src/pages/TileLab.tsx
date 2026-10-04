@@ -84,11 +84,6 @@ export function TileLab() {
 
   return (
     <div className="lab">
-      <header className="lab-head">
-        <h1>Tile Lab</h1>
-        <p>Every part of a tile, adjustable, with the result shown live. Your work is kept in this browser.</p>
-      </header>
-
       <div className="lab-body">
         <div className="lab-controls">
           <Section title="Content">

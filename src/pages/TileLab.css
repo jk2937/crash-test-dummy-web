@@ -1,7 +1,4 @@
 .lab { max-width: 1200px; margin: 0 auto; padding: 0 0 24px; }
-.lab-head { text-align: center; margin: 4px 0 18px; }
-.lab-head h1 { margin: 0 0 6px; font-size: clamp(24px, 4vw, 36px); }
-.lab-head p { margin: 0 auto; max-width: 60ch; }
 
 .lab-body {
   display: grid;
