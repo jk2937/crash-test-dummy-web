@@ -1,6 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&display=swap');
 *, *::before, *::after { box-sizing: border-box; }
-html { color-scheme: dark; }
+/* The page's own scrollbar takes no room (the page still scrolls, by wheel,
+   touch or keys), so the area the HUD measures to choose portrait or landscape
+   is the whole window, whether the page scrolls or not -- exact, and never
+   changing with the layout it chooses. A panel that scrolls inside the page
+   keeps its own scrollbar. */
+html { color-scheme: dark; scrollbar-width: none; }
+html::-webkit-scrollbar { display: none; }
 /* Icons spill past their tiles, and at the screen's edge that is past the
    page: cut them off there, so the page is never wider than the screen. */
 #root { overflow-x: clip; }

@@ -43,15 +43,15 @@ function scaleFor(width: number, height: number, small: boolean) {
 }
 
 function readViewport() {
-  // The window's own size, scrollbar included. Not the width without the
-  // scrollbar: the layout decides whether the page scrolls (portrait never
-  // does), so measuring around the scrollbar fed back into itself -- on a
-  // nearly square window, a scrollbar made it portrait, portrait removed the
-  // scrollbar, which made it landscape, which brought the scrollbar back --
-  // and React gave up and blanked the page. The window's size does not move
-  // when the scrollbar comes and goes.
+  // Exactly the area the page has to lay out in. The page's own scrollbar
+  // takes no room (index.css), so this is the whole window and does not change
+  // when the layout turns scrolling on or off -- which once fed back into
+  // itself on a nearly square window (a scrollbar made it portrait, portrait
+  // removed the scrollbar, which made it landscape...) until React blanked the
+  // page.
   // At least 1px each way: a minimised window can report 0, which no layout fits.
-  return `${Math.max(1, window.innerWidth)}x${Math.max(1, window.innerHeight)}`;
+  const root = document.documentElement;
+  return `${Math.max(1, root.clientWidth)}x${Math.max(1, root.clientHeight)}`;
 }
 function subscribe(onChange: () => void) {
   window.addEventListener('resize', onChange);
@@ -83,6 +83,8 @@ function subscribe(onChange: () => void) {
 export function TileLayout({ tiles, columns = 2, portraitRows = 2, shade = false, header }: TileLayoutProps) {
   const [width, height] = useSyncExternalStore(subscribe, readViewport).split('x').map(Number);
 
+  // Wider than tall is landscape, taller than wide is portrait; a square is
+  // landscape, as in the game.
   const portrait = width < height;
   const small = Math.min(width, height) <= SMALL_EDGE;
   const scale = scaleFor(width, height, small);
