@@ -6,8 +6,8 @@ import { shortNumber } from '../format';
 import './Certifications.css';
 
 // The game's CERTIFICATIONS screen, as UI only: the standings are the
-// screenshot's (the last row's is made up, to show a claim waiting), and
-// CLAIM does nothing. The rules for how a row reads are the game's
+// screenshots' (where a row was cut off, its numbers are the game's targets
+// with no progress), and CLAIM does nothing. The rules for how a row reads are the game's
 // (CertsView): the level shown is the first not yet claimed; a row with
 // levels earned and waiting has a purple ring, bar and CLAIM (CLAIM xN for
 // more than one); a row with every level claimed has a gold ring and DONE.
@@ -34,7 +34,26 @@ const GROUPS: { name: string; certs: Cert[] }[] = [
       { title: 'STRESS TESTING', difficulty: 'hard', description: 'Click 500 times in a single run', progress: 0, target: 500, levels: 1, earned: 0, claimed: 0 },
       { title: 'TEST DATA PRODUCTION I', difficulty: 'easy', description: 'Earn 10,000,000 Test Data', progress: 1780, target: 10_000_000, levels: 5, earned: 0, claimed: 0 },
       { title: 'WALL IMPACT TESTING I', difficulty: 'easy', description: 'Crash 50 vehicles into the wall', progress: 1, target: 50, levels: 5, earned: 0, claimed: 0 },
-      { title: 'STABILITY TESTING I', difficulty: 'easy', description: 'Spin out 10 times', progress: 10, target: 10, levels: 4, earned: 2, claimed: 0 },
+      { title: 'STABILITY TESTING I', difficulty: 'easy', description: 'Spin out 10 times', progress: 0, target: 10, levels: 4, earned: 0, claimed: 0 },
+    ],
+  },
+  {
+    name: 'RECORDS',
+    certs: [
+      { title: 'PEAK IMPACT TESTING I', difficulty: 'easy', description: 'Earn 25,000 Test Data in one crash', progress: 2200, target: 25_000, levels: 4, earned: 0, claimed: 0 },
+      { title: 'HIGH SPEED TESTING I', difficulty: 'easy', description: 'Hit the wall at 100 studs per second', progress: 100, target: 100, levels: 5, earned: 2, claimed: 0 },
+      { title: 'MAXIMUM DEMOLITION I', difficulty: 'easy', description: 'Tear 100 parts off in one crash', progress: 100, target: 100, levels: 4, earned: 1, claimed: 0 },
+      { title: 'MAXIMUM GLASS SHATTER I', difficulty: 'easy', description: 'Shatter 10 panes in one crash', progress: 1, target: 10, levels: 4, earned: 0, claimed: 0 },
+      { title: 'LONG HAUL TESTING I', difficulty: 'easy', description: 'Keep one run going for 6 seconds', progress: 6, target: 6, levels: 4, earned: 1, claimed: 0 },
+      { title: 'STRESS DAMAGE TESTING I', difficulty: 'easy', description: 'Deal 10,000 Test Data of damage with your clicks in one run', progress: 0, target: 10_000, levels: 4, earned: 0, claimed: 0 },
+    ],
+  },
+  {
+    name: 'VEHICLE EVENTS',
+    certs: [
+      { title: 'LOAD STRENGTH TESTING', difficulty: 'medium', description: 'Drop 1,000 unsecured loads', progress: 5, target: 1000, levels: 1, earned: 0, claimed: 0 },
+      { title: 'PATIENT RESTRAINT TESTING', difficulty: 'medium', description: 'Eject 1,000 patients from the ambulance', progress: 0, target: 1000, levels: 1, earned: 0, claimed: 0 },
+      { title: 'BALLOON RETENTION TESTING', difficulty: 'medium', description: 'Set 6,000 balloons free', progress: 0, target: 6000, levels: 1, earned: 0, claimed: 0 },
     ],
   },
 ];
@@ -71,9 +90,11 @@ function CertRow({ cert: c }: { cert: Cert }) {
   const waiting = c.earned - c.claimed;
   const done = c.claimed >= c.levels;
   const ring = done ? 'var(--ctd-gold)' : waiting > 0 ? 'var(--ctd-claim)' : undefined;
+  // A row with a claim waiting is faintly purple all over, as in the game.
+  const fill = !done && waiting > 0 ? 'color-mix(in srgb, var(--ctd-rowFill) 88%, var(--ctd-claim))' : undefined;
   return (
     <li>
-      <Row ring={ring} className="cert-row">
+      <Row ring={ring} fill={fill} className="cert-row">
         <div className="cert-main">
           <div className="cert-heading">
             <span className="cert-title">{c.title}</span>

@@ -64,13 +64,15 @@ export function GroupLabel({ children }: { children: ReactNode }) {
 }
 
 // A row in a screen. Its ring can take a state's colour (purple when something
-// in it is waiting, gold when it is all done).
-export function Row({ ring, className = '', children }: { ring?: string; className?: string; children: ReactNode }) {
+// in it is waiting, gold when it is all done), and its fill a tint.
+export function Row({ ring, fill, className = '', children }: {
+  ring?: string; fill?: string; className?: string; children: ReactNode;
+}) {
   return (
     <Surface
       className={`ctd-row ${className}`}
       color={ring ?? 'var(--ctd-rowRing)'}
-      fill="var(--ctd-rowFill)"
+      fill={fill ?? 'var(--ctd-rowFill)'}
       edge={5}
       radius={16}
     >
