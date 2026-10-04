@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button, SafeArea, TileLayout, type TileSpec } from './components';
 import { PRESETS } from './pattern';
 import { TileLab } from './pages/TileLab';
+import { Facility } from './pages/Facility';
 import { go, useRoute } from './hooks/useRoute';
 import './App.css';
 
@@ -27,8 +28,8 @@ const TILES: Omit<TileSpec, 'texture'>[] = [
   { id: 'lab', label: 'Tile Lab', icon: '🧪', color: 'facility', region: 'right' },
 ];
 
-// A showcase of the toolkit, laid out like the game's HUD. HOME and TILE LAB
-// switch between the two pages.
+// A showcase of the toolkit, laid out like the game's HUD. HOME, TILE LAB and
+// FACILITY switch between the pages.
 export default function App() {
   const route = useRoute();
 
@@ -56,11 +57,12 @@ export default function App() {
           ...(t.id === 'vehicles' && { nudge: nudging, spotlight: spotlit, onClick: pressVehicles }),
           ...(t.id === 'home' && { onClick: () => go('home') }),
           ...(t.id === 'lab' && { onClick: () => go('lab') }),
+          ...(t.id === 'facility' && { onClick: () => go('facility') }),
         }))}
       />
 
       <SafeArea>
-        {route === 'lab' ? <TileLab /> : (<>
+        {route === 'lab' ? <TileLab /> : route === 'facility' ? <Facility /> : (<>
           <header className="hud-title">
             <h1>Be a Crash Test Dummy · UI kit</h1>
             <p>The game's HUD, rebuilt for the web. Work in progress.</p>

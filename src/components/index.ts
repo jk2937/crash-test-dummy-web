@@ -6,3 +6,5 @@ export { Shade } from './Shade';
 export { SafeArea } from './SafeArea';
 export { DEFAULT_LOOK, lookStyle } from './look';
 export type { TileLook } from './look';
+export { Surface } from './Surface';
+export { SURFACE_TEXTURE } from './surfaceTexture';

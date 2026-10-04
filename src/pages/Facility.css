@@ -1,0 +1,62 @@
+.fac { display: grid; place-items: start center; padding: 8px 0 24px; }
+
+.fac-dialog {
+  width: min(780px, 100%);
+  padding: 16px 18px 20px;
+  color: var(--ctd-text);
+}
+.fac-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
+.fac-title { margin: 0; font-size: 21px; letter-spacing: 0.02em; color: var(--ctd-facility); }
+.fac-balance { margin: 2px 0 0; font-size: 18px; font-weight: 700; }
+.fac-balance b { color: var(--ctd-gold); }
+.fac-close {
+  background: none;
+  border: 0;
+  color: var(--ctd-muted);
+  font: 700 22px/1 'Fredoka', system-ui, sans-serif;
+  padding: 4px 6px;
+  cursor: pointer;
+}
+.fac-close:hover { color: var(--ctd-text); }
+.fac-close:focus-visible { outline: 3px solid var(--ctd-text); border-radius: 6px; }
+
+.fac-rows { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.fac-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px 5px 6px;
+}
+
+.fac-icon {
+  width: 50px;
+  height: 50px;
+  display: grid;
+  place-items: center;
+  font-size: 34px;
+  line-height: 1;
+}
+.fac-icon span { filter: drop-shadow(2px 3px 0 rgb(0 0 0 / 0.35)); transform: rotate(-8deg); }
+
+.fac-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.fac-name { font-size: 18px; font-weight: 500; }
+.fac-detail { font-size: 14px; color: var(--ctd-gold); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.fac-price {
+  width: 150px;
+  height: 44px;
+  color: var(--ctd-gold);
+  font: 700 16px/1 'Fredoka', system-ui, sans-serif;
+  cursor: pointer;
+}
+.fac-price-off { color: var(--ctd-muted); cursor: not-allowed; }
+.fac-price:focus-visible { outline: 3px solid var(--ctd-text); outline-offset: 2px; }
+
+@media (max-width: 520px) {
+  .fac-dialog { padding: 12px 10px 14px; }
+  .fac-row { padding-right: 8px; }
+  .fac-price { width: 84px; font-size: 14px; }
+  .fac-name { font-size: 16px; }
+  .fac-detail { font-size: 12px; }
+}

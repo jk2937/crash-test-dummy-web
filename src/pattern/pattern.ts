@@ -142,6 +142,59 @@ export function renderPattern(spec: PatternSpec): RenderedPattern {
   };
 }
 
+// ---------------------------------------------------------------------------
+// Fitted textures: made to measure for one container, rather than repeated.
+//
+//   - Every mark is `size` across, everywhere.
+//   - Marks fill the container edge to edge in a grid, with a margin around
+//     the outside, and every gap the same.
+//   - Gaps and margins aim at the spec's `gap` (the margin at `margin`, the gap
+//     by default) and stretch or squash, in proportion, by just enough that a
+//     whole number of marks fills the box: the count that needs the least
+//     stretching wins. So spacing is close to `gap` on every container, and
+//     equal within each one.
+// ---------------------------------------------------------------------------
+
+export interface FittedAxis {
+  count: number; // marks along this side
+  gap: number; // px between neighbouring marks
+  margin: number; // px from each edge to the outermost marks
+}
+
+// How marks fit along one side `length` px long.
+export function fitAxis(length: number, size: number, gap: number, margin = gap): FittedAxis {
+  // As many marks as fit with the spacing as asked, rounded to the nearest
+  // whole number, so the stretch is never more than half a step either way.
+  const count = Math.max(1, Math.round((length - 2 * margin + gap) / (size + gap)));
+  const room = Math.max(0, length - count * size);
+  const asked = (count - 1) * gap + 2 * margin;
+  const k = asked > 0 ? room / asked : 1;
+  return { count, gap: gap * k, margin: margin * k };
+}
+
+// A fitted texture for a box `width` x `height` px, as a CSS background-image
+// sized to the box exactly (background-size: 100% 100%, no repeat). Grid only:
+// a fitted texture has no tile to stagger or rotate.
+export function renderFitted(spec: PatternSpec, width: number, height: number, margin?: number): string {
+  if (width < 1 || height < 1) return 'none';
+  const x = fitAxis(width, spec.size, spec.gap, margin);
+  const y = fitAxis(height, spec.size, spec.gap, margin);
+  const mark = spec.mark === 'stripe' ? 'line' : spec.mark;
+  const d = markPath(mark, spec.size);
+  const turnExtra = mark === 'cross' ? 45 : 0;
+  const shape = lit(d, spec.finish, spec.size, spec.strength, mark === 'ring' ? 'evenodd' : 'nonzero');
+  const marks: string[] = [];
+  for (let i = 0; i < x.count; i++) {
+    for (let j = 0; j < y.count; j++) {
+      const cx = x.margin + i * (spec.size + x.gap) + spec.size / 2;
+      const cy = y.margin + j * (spec.size + y.gap) + spec.size / 2;
+      marks.push(`<g transform="translate(${cx.toFixed(2)} ${cy.toFixed(2)}) rotate(${spec.angle + turnExtra})">${shape}</g>`);
+    }
+  }
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">${marks.join('')}</svg>`;
+  return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
+}
+
 // The pattern as CSS custom properties, for any element whose background
 // stack reads --ctd-texture and --ctd-texture-size.
 export function patternStyle(spec: PatternSpec | null | undefined): Record<string, string> {
