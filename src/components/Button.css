@@ -54,7 +54,7 @@
   transform: translateY(calc(-1 * var(--label-space, 0px))) rotate(-12deg);
   /* A hard offset shadow, the way the game's icons sit on their tiles,
      plus a soft one under it so it reads on light and dark fills alike. */
-  filter: drop-shadow(3px 5px 0 rgb(0 0 0 / 0.45)) drop-shadow(0 2px 6px rgb(0 0 0 / 0.25));
+  filter: drop-shadow(6px 10px 0 rgb(0 0 0 / 0.45)) drop-shadow(0 4px 6px rgb(0 0 0 / 0.25));
   pointer-events: none;
 }
 .ctd-btn-label {
