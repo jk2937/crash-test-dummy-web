@@ -1,24 +1,28 @@
+/* The blink clock every tile runs (see ctd-nag below). */
+@property --ctd-blink {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 1;
+}
+
 .ctd-btn {
   position: relative;
+  /* The fill below is drawn at z-index -1 inside the tile, never behind the
+     page. */
+  isolation: isolate;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
-  /* The width of each of the two outlines. */
+  /* The width of each of the two outlines, and the corner radius. */
   --edge: 6px;
+  --radius: 28px;
   /* The label clears the coloured ring by 4px. */
   padding: 0 var(--edge) calc(var(--edge) + 4px);
-  /* Two outlines of the same width: the dark one outside, and inside it a
-     ring of the tile's own colour, drawn over the shine and the texture so
-     neither touches it. No lip and no drop shadow. */
+  /* The dark outline. The coloured ring inside it belongs to the fill. */
   border: var(--edge) solid var(--ctd-panel);
-  border-radius: 26%;
-  background:
-    var(--ctd-texture, none) 0 0 / var(--ctd-texture-size, auto) repeat,
-    /* The shine: a touch of shade at the top, fading out, light at the foot. */
-    linear-gradient(to top, rgb(255 255 255 / 0.38), rgb(255 255 255 / 0) 55%, rgb(0 0 0 / 0.12)),
-    var(--tile);
-  box-shadow: inset 0 0 0 var(--edge) var(--tile);
+  border-radius: var(--radius);
+  background: none;
   color: #fff;
   font: 800 14.5px/1 'Fredoka', system-ui, sans-serif;
   text-transform: uppercase;
@@ -26,20 +30,50 @@
   cursor: pointer;
   /* The icon is sized off the tile's own width (cqw), whatever the label size. */
   container-type: inline-size;
-  /* Grows and shrinks about its own centre: scale only, no nudge up or down. */
-  transform-origin: center;
-  transition: transform 0.12s ease;
 }
-.ctd-btn:hover:not(:disabled) { transform: scale(1.06); z-index: 1; }
-.ctd-btn:active:not(:disabled) { transform: scale(0.97); }
+/* The fill, on a layer of its own so a nag can fade it while the icon, label
+   and outline stay put: colour, shine and texture, with a ring of the tile's
+   own colour drawn over them so neither touches it. No lip, no drop shadow. */
+.ctd-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: calc(var(--radius) - var(--edge));
+  background:
+    var(--ctd-texture, none) 0 0 / var(--ctd-texture-size, auto) repeat,
+    /* The shine: a touch of shade at the top, fading out, light at the foot. */
+    linear-gradient(to top, rgb(255 255 255 / 0.38), rgb(255 255 255 / 0) 55%, rgb(0 0 0 / 0.12)),
+    var(--tile);
+  box-shadow: inset 0 0 0 var(--edge) var(--tile);
+  /* Follows the blink clock only while nagging (--ctd-nag-on: 1). */
+  opacity: calc(1 - var(--ctd-nag-on, 0) * (1 - var(--ctd-blink)));
+  animation: ctd-nag 5.2s step-end infinite;
+}
+/* A tile's icon spills over its neighbours: the one under the pointer comes to
+   the front. The tile itself never changes size. */
+.ctd-btn:hover:not(:disabled) { z-index: 1; }
 .ctd-btn:focus-visible { outline: 3px solid var(--ctd-text); outline-offset: 3px; }
 .ctd-btn:disabled { filter: grayscale(0.8); opacity: 0.6; cursor: not-allowed; }
 
 /* --label-space is the height the label takes along the bottom (its font
    size plus the padding under it); the icon is lifted by that much. */
-.ctd-btn-small { width: 72px; height: 72px; font-size: 11px; --edge: 4px; --label-space: 19px; }
+.ctd-btn-small { width: 72px; height: 72px; font-size: 11px; --edge: 4px; --radius: 19px; --label-space: 19px; }
 .ctd-btn-medium { width: 112px; height: 112px; --label-space: 24.5px; }
-.ctd-btn-large { width: 140px; height: 140px; font-size: 17px; --label-space: 27px; }
+.ctd-btn-large { width: 140px; height: 140px; font-size: 17px; --radius: 35px; --label-space: 27px; }
+
+/* The nag: the fill blinks twice and rests -- four 0.45s steps (faded, full,
+   faded, full), then held full for the rest of a 5.2s period. Every tile runs
+   this clock from the moment it is drawn, so tiles on the page keep one time,
+   and a nag only decides whether the fill follows it. */
+@keyframes ctd-nag {
+  0% { --ctd-blink: 0.25; }
+  8.654% { --ctd-blink: 1; }
+  17.308% { --ctd-blink: 0.25; }
+  25.962% { --ctd-blink: 1; }
+  100% { --ctd-blink: 1; }
+}
+.ctd-btn-nag { --ctd-nag-on: 1; }
 
 .ctd-btn-icon {
   position: absolute;

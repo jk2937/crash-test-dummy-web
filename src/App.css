@@ -20,3 +20,40 @@
   .hud { grid-template-columns: 1fr; grid-template-areas: 'title' 'left' 'right' 'sizes'; }
   .hud-grid { justify-content: center; }
 }
+
+/* The nag test, and the stand-in Vehicles panel it opens. */
+.nag-test, .shop {
+  background: var(--ctd-panel);
+  color: var(--ctd-text);
+  border-radius: 20px;
+  padding: 20px;
+}
+.nag-test { margin: 16px auto; max-width: 1200px; }
+.nag-test h2, .shop h2 { margin: 0 0 6px; }
+.nag-test p, .shop p { margin: 0 0 14px; color: var(--ctd-muted); max-width: 70ch; }
+.nag-test-row { display: flex; flex-wrap: wrap; gap: 10px; }
+.nag-test-btn {
+  background: var(--ctd-surfaceOff);
+  color: var(--ctd-text);
+  border: 0;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font: 700 15px/1 'Fredoka', system-ui, sans-serif;
+  cursor: pointer;
+}
+.nag-test-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.nag-test-btn:focus-visible { outline: 3px solid var(--ctd-text); outline-offset: 2px; }
+.nag-test-gold { background: var(--ctd-gold); color: var(--ctd-panel); }
+.nag-test .nag-test-state { margin: 14px 0 0; }
+.nag-test-state b { color: var(--ctd-text); }
+
+.shop-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgb(0 0 0 / 0.4);
+}
+.shop { width: min(420px, 100%); }

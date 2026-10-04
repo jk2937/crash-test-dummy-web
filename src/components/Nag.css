@@ -1,0 +1,10 @@
+:root { --ctd-shade-z: 1000; }
+
+.ctd-shade {
+  position: fixed;
+  inset: 0;
+  z-index: var(--ctd-shade-z);
+  background: rgb(12 14 20 / 0.55);
+  display: none;
+}
+.ctd-shade-up { display: block; }
