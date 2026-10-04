@@ -20,7 +20,8 @@ interface ButtonProps {
 // A HUD tile: a filled square in its section's colour, icon above, label
 // along the bottom in white with a dark stroke, as in the Roblox HUD.
 export function Button({ label, icon, color = 'gold', texture, size = 'medium', onClick, disabled = false }: ButtonProps) {
-  const style = { '--tile': `var(--ctd-${color})`, ...patternStyle(texture) } as CSSProperties;
+  // --chars lets a long label shrink to fit its tile (see .ctd-btn-label).
+  const style = { '--tile': `var(--ctd-${color})`, '--chars': label.length, ...patternStyle(texture) } as CSSProperties;
   return (
     <button className={`ctd-btn ctd-btn-${size}`} style={style} onClick={onClick} disabled={disabled}>
       {icon && <span className="ctd-btn-icon" aria-hidden>{icon}</span>}

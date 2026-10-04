@@ -11,8 +11,8 @@ const SWATCHES: ColorKey[] = ['gold', 'info', 'rebirth', 'setup', 'facility', 'l
 
 // Pick a mark, a layout and a finish, tune it, and see it on real tiles.
 export function Playground() {
-  const [spec, setSpec] = useState<PatternSpec>(PRESETS.studs);
-  const [preset, setPreset] = useState<PresetName | null>('studs');
+  const [spec, setSpec] = useState<PatternSpec>(PRESETS.polka);
+  const [preset, setPreset] = useState<PresetName | null>('polka');
   const [copied, setCopied] = useState(false);
 
   const set = <K extends keyof PatternSpec>(key: K, value: PatternSpec[K]) => {
