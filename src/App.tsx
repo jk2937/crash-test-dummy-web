@@ -1,20 +1,25 @@
 import { useState } from 'react';
-import { Button, Shade } from './components';
+import { Button, Shade, TileLayout, type TileSpec } from './components';
 import { PRESETS } from './pattern';
 import { Playground } from './pages/Playground';
-import type { ColorKey } from './theme';
 import './App.css';
 
 // The texture the HUD tiles wear.
 const TILE_TEXTURE = PRESETS.polka;
 
-const LEFT: [string, string, ColorKey][] = [
-  ['Certifications', '📜', 'gold'], ['Home', '🏠', 'info'],
-  ['Rebirth', '♻️', 'rebirth'], ['Contracts', '📋', 'info'],
-  ['Setup', '🛠️', 'setup'], ['FX Crate', '✨', 'stop'],
-];
-const RIGHT: [string, string, ColorKey][] = [
-  ['Facility', '🏭', 'facility'], ['Collection', '📖', 'rebirth'], ['Store', '🛒', 'live'],
+// The HUD's tiles. Each says only which side it belongs on; TileLayout gives
+// it a slot in landscape and in portrait.
+const TILES: Omit<TileSpec, 'texture'>[] = [
+  { id: 'certs', label: 'Certifications', icon: '📜', color: 'gold', region: 'left' },
+  { id: 'home', label: 'Home', icon: '🏠', color: 'info', region: 'left' },
+  { id: 'rebirth', label: 'Rebirth', icon: '♻️', color: 'rebirth', region: 'left' },
+  { id: 'contracts', label: 'Contracts', icon: '📋', color: 'info', region: 'left' },
+  { id: 'setup', label: 'Setup', icon: '🛠️', color: 'setup', region: 'left' },
+  { id: 'fx', label: 'FX Crate', icon: '✨', color: 'stop', region: 'left' },
+  { id: 'vehicles', label: 'Vehicles', icon: '🚗', color: 'gold', region: 'right' },
+  { id: 'facility', label: 'Facility', icon: '🏭', color: 'facility', region: 'right' },
+  { id: 'collection', label: 'Collection', icon: '📖', color: 'rebirth', region: 'right' },
+  { id: 'store', label: 'Store', icon: '🛒', color: 'live', region: 'right' },
 ];
 
 // A showcase of the toolkit, laid out like the game's HUD.
@@ -36,18 +41,18 @@ export default function App() {
   return (
     <>
       <main className="hud">
-        <header className="hud-title">
-          <h1>Be a Crash Test Dummy · UI kit</h1>
-          <p>The game's HUD, rebuilt for the web. Work in progress.</p>
-        </header>
-        <section className="hud-grid hud-left" aria-label="Left menu">
-          {LEFT.map(([label, icon, color]) => <Button key={label} label={label} icon={icon} color={color} texture={TILE_TEXTURE} />)}
-        </section>
-        <section className="hud-grid hud-right" aria-label="Right menu">
-          <Button label="Vehicles" icon="🚗" color="gold" texture={TILE_TEXTURE}
-            nudge={nudging} spotlight={spotlit} onClick={pressVehicles} />
-          {RIGHT.map(([label, icon, color]) => <Button key={label} label={label} icon={icon} color={color} texture={TILE_TEXTURE} />)}
-        </section>
+        <TileLayout
+          tiles={TILES.map((t) => ({
+            ...t,
+            texture: TILE_TEXTURE,
+            ...(t.id === 'vehicles' && { nudge: nudging, spotlight: spotlit, onClick: pressVehicles }),
+          }))}
+        >
+          <header className="hud-title">
+            <h1>Be a Crash Test Dummy · UI kit</h1>
+            <p>The game's HUD, rebuilt for the web. Work in progress.</p>
+          </header>
+        </TileLayout>
         <section className="hud-sizes" aria-label="Sizes">
           <Button label="Small" icon="🚀" color="setup" texture={TILE_TEXTURE} size="small" />
           <Button label="Medium" icon="🚀" color="setup" texture={TILE_TEXTURE} />

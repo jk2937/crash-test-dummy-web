@@ -5,7 +5,7 @@ import './Button.css';
 
 export type ButtonSize = 'small' | 'medium' | 'large';
 
-interface ButtonProps {
+export interface ButtonProps {
   label: string;
   icon?: ReactNode;
   // Any palette colour; the tile is filled with it.

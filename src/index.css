@@ -1,6 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&display=swap');
 *, *::before, *::after { box-sizing: border-box; }
 html { color-scheme: dark; }
+/* Icons spill past their tiles, and at the screen's edge that is past the
+   page: cut them off there, so the page is never wider than the screen. */
+#root { overflow-x: clip; }
 body {
   margin: 0;
   min-height: 100vh;

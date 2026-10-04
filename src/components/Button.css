@@ -62,7 +62,19 @@
 /* --label-space is the height the label takes along the bottom (its font
    size plus the padding under it); the icon is lifted by that much. */
 .ctd-btn-small { width: 72px; height: 72px; font-size: 11px; --edge: 4px; --radius: 19px; --label-space: 19px; }
-.ctd-btn-medium { width: 112px; height: 112px; --label-space: 24.5px; }
+.ctd-btn-medium {
+  /* Medium tiles take the size of the slot they are in (--ctd-tile-size, set
+     by TileLayout), 112px otherwise; the label, the corners and the icon's
+     lift scale with it, and so do the outlines, so a smaller tile is the same
+     tile, smaller. */
+  --size: var(--ctd-tile-size, 112px);
+  --edge: calc(var(--size) * 0.054);
+  width: var(--size);
+  height: var(--size);
+  font-size: calc(var(--size) * 0.13);
+  --radius: calc(var(--size) * 0.25);
+  --label-space: calc(var(--size) * 0.22);
+}
 .ctd-btn-large { width: 140px; height: 140px; font-size: 17px; --radius: 35px; --label-space: 27px; }
 
 /* The nudge: the fill, the icon (shadow and all) and the label blink twice and

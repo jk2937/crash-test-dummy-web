@@ -1,25 +1,16 @@
 .hud {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  grid-template-areas: 'left title right' 'sizes sizes sizes';
+  display: flex;
+  flex-direction: column;
   gap: 24px;
   padding: 16px;
   max-width: 1200px;
   margin: 0 auto;
 }
-.hud-title { grid-area: title; text-align: center; align-self: center; }
+.hud-title { text-align: center; }
 .hud-title h1 { margin: 0 0 8px; font-size: clamp(22px, 4vw, 36px); }
 .hud-title p { margin: 0; }
-/* Icons spill past the top of their tiles: room above each row for them, so
-   one tile's icon never reaches the label of the tile above. */
-.hud-grid { display: grid; grid-template-columns: repeat(2, auto); gap: 36px 16px; padding-top: 30px; align-content: start; }
-.hud-left { grid-area: left; }
-.hud-right { grid-area: right; }
-.hud-sizes { grid-area: sizes; display: flex; flex-wrap: wrap; gap: 36px 24px; padding-top: 30px; align-items: end; justify-content: center; }
-@media (max-width: 760px) {
-  .hud { grid-template-columns: 1fr; grid-template-areas: 'title' 'left' 'right' 'sizes'; }
-  .hud-grid { justify-content: center; }
-}
+/* Room above the row for the icons that spill past their tiles. */
+.hud-sizes { display: flex; flex-wrap: wrap; gap: 36px 24px; padding-top: 30px; align-items: end; justify-content: center; }
 
 /* The nudge and spotlight test. */
 .nudge-test {

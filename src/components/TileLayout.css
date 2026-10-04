@@ -1,0 +1,51 @@
+/* The slots TileLayout works out are applied here: --land-* in landscape,
+   --port-* in portrait. Portrait is a screen taller than it is wide, as in the
+   game. */
+.tile-layout {
+  --tile: 112px;
+  --col-gap: 16px;
+  /* Room above every row for the icons that spill past their tiles. */
+  --row-gap: 36px;
+  display: grid;
+  grid-template-columns:
+    repeat(var(--columns), var(--tile))
+    minmax(var(--col-gap), 1fr)
+    repeat(var(--columns), var(--tile));
+  grid-template-rows: repeat(var(--land-rows), var(--tile));
+  column-gap: var(--col-gap);
+  row-gap: var(--row-gap);
+  padding-top: var(--row-gap);
+}
+.tile-slot {
+  grid-column: var(--land-col);
+  grid-row: var(--land-row);
+  --ctd-tile-size: var(--tile);
+}
+/* The space between the regions: the middle column, every row. */
+.tile-layout-middle {
+  grid-column: calc(var(--columns) + 1);
+  grid-row: 1 / span var(--land-rows);
+  align-self: center;
+  min-width: 0;
+}
+
+@media (orientation: portrait) {
+  .tile-layout {
+    /* As big as a tile can be with every column fitting across the screen,
+       and never bigger than its own size. */
+    --tile: min(112px, (100vw - 32px - (var(--port-columns) - 1) * var(--col-gap)) / var(--port-columns));
+    --col-gap: 10px;
+    --row-gap: calc(var(--tile) * 0.3);
+    grid-template-columns: repeat(var(--port-columns), var(--tile));
+    grid-template-rows: repeat(var(--port-rows), var(--tile)) auto;
+    justify-content: center;
+  }
+  .tile-slot {
+    grid-column: var(--port-col);
+    grid-row: var(--port-row);
+  }
+  .tile-layout-middle {
+    grid-column: 1 / -1;
+    grid-row: calc(var(--port-rows) + 1);
+  }
+}
