@@ -4,17 +4,21 @@
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
-  padding: 0 4px 6px;
+  /* The width of each of the two outlines. */
+  --edge: 6px;
+  /* The label clears the coloured ring by 4px. */
+  padding: 0 var(--edge) calc(var(--edge) + 4px);
   /* Two outlines of the same width: the dark one outside, and inside it a
      ring of the tile's own colour, drawn over the shine and the texture so
      neither touches it. No lip and no drop shadow. */
-  border: 4px solid var(--ctd-panel);
-  border-radius: 16px;
+  border: var(--edge) solid var(--ctd-panel);
+  border-radius: 26%;
   background:
     var(--ctd-texture, none) 0 0 / var(--ctd-texture-size, auto) repeat,
-    radial-gradient(circle at 50% 30%, rgb(255 255 255 / 0.25), transparent 60%),
+    /* The shine: light at the top, fading out, a touch of shade at the foot. */
+    linear-gradient(to bottom, rgb(255 255 255 / 0.38), rgb(255 255 255 / 0) 55%, rgb(0 0 0 / 0.12)),
     var(--tile);
-  box-shadow: inset 0 0 0 4px var(--tile);
+  box-shadow: inset 0 0 0 var(--edge) var(--tile);
   color: #fff;
   font: 800 14.5px/1 'Fredoka', system-ui, sans-serif;
   text-transform: uppercase;
@@ -31,9 +35,11 @@
 .ctd-btn:focus-visible { outline: 3px solid var(--ctd-text); outline-offset: 3px; }
 .ctd-btn:disabled { filter: grayscale(0.8); opacity: 0.6; cursor: not-allowed; }
 
-.ctd-btn-small { width: 72px; height: 72px; font-size: 11px; }
-.ctd-btn-medium { width: 112px; height: 112px; }
-.ctd-btn-large { width: 140px; height: 140px; font-size: 17px; }
+/* --label-space is the height the label takes along the bottom (its font
+   size plus the padding under it); the icon is lifted by that much. */
+.ctd-btn-small { width: 72px; height: 72px; font-size: 11px; --edge: 4px; --label-space: 19px; }
+.ctd-btn-medium { width: 112px; height: 112px; --label-space: 24.5px; }
+.ctd-btn-large { width: 140px; height: 140px; font-size: 17px; --label-space: 27px; }
 
 .ctd-btn-icon {
   position: absolute;
@@ -44,7 +50,8 @@
   place-items: center;
   font-size: 100cqw;
   line-height: 1;
-  transform: rotate(-12deg);
+  /* Centred in the space above the label, and tilted. */
+  transform: translateY(calc(-1 * var(--label-space, 0px))) rotate(-12deg);
   /* A hard offset shadow, the way the game's icons sit on their tiles,
      plus a soft one under it so it reads on light and dark fills alike. */
   filter: drop-shadow(3px 5px 0 rgb(0 0 0 / 0.45)) drop-shadow(0 2px 6px rgb(0 0 0 / 0.25));
