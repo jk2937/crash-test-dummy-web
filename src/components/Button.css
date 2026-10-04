@@ -37,11 +37,12 @@
 
 .ctd-btn-icon {
   position: absolute;
-  /* Bigger than the tile: it spills past the top and sides on purpose. */
-  inset: -34% -14% 18%;
+  /* Centred on the tile and bigger than it: it spills past every edge on
+     purpose, and the label sits on top of it. */
+  inset: -25%;
   display: grid;
   place-items: center;
-  font-size: 82cqw;
+  font-size: 100cqw;
   line-height: 1;
   transform: rotate(-12deg);
   /* A hard offset shadow, the way the game's icons sit on their tiles,
