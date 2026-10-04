@@ -5,13 +5,16 @@
   align-items: center;
   justify-content: flex-end;
   padding: 0 4px 6px;
+  /* Two outlines of the same width: the dark one outside, and inside it a
+     ring of the tile's own colour, drawn over the shine and the texture so
+     neither touches it. No lip and no drop shadow. */
   border: 4px solid var(--ctd-panel);
   border-radius: 16px;
   background:
     var(--ctd-texture, none) 0 0 / var(--ctd-texture-size, auto) repeat,
     radial-gradient(circle at 50% 30%, rgb(255 255 255 / 0.25), transparent 60%),
     var(--tile);
-  box-shadow: inset 0 -6px 0 rgb(0 0 0 / 0.18), 0 3px 0 var(--ctd-panel);
+  box-shadow: inset 0 0 0 4px var(--tile);
   color: #fff;
   font: 800 14.5px/1 'Fredoka', system-ui, sans-serif;
   text-transform: uppercase;
