@@ -1,0 +1,9 @@
+.ctd-safe-area {
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding:
+    var(--ctd-safe-top, 0px)
+    var(--ctd-safe-right, 0px)
+    var(--ctd-safe-bottom, 0px)
+    var(--ctd-safe-left, 0px);
+}

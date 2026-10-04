@@ -53,9 +53,10 @@ function subscribe(onChange: () => void) {
 // tile, and a margin to the screen's edges.
 //
 // It is a HUD: fixed to the screen, over the page, never scrolling with it.
-// The room it takes is published on the page root for the page to keep clear:
-// --ctd-hud-side (landscape: each side's tiles and their margins) and
-// --ctd-hud-top (portrait: the rows across the top), each 0px otherwise.
+// The rest of the screen -- the safe area -- is published on the page root as
+// --ctd-safe-top, -right, -bottom and -left: how far content keeps in from
+// each edge to stay clear of the tiles, with the game's margin between. Use it
+// through SafeArea.
 //
 //   Landscape: each region is a grid `columns` wide, filled row by row: left
 //              at the top left of the screen, right at the top right.
@@ -84,15 +85,18 @@ export function TileLayout({ tiles, columns = 2, portraitRows = 2, shade = false
   const tile = TILE * scale * shrink;
   const gap = spacing * scale * shrink;
 
-  // The room the HUD takes, for the page to keep clear (see above): the tiles,
-  // the screen margin outside them and a gap inside.
-  const side = portrait ? 0 : edge + columns * tile + (columns - 1) * gap + gap;
-  const top = portrait ? edge + gap + portraitRows * tile + portraitRows * gap : 0;
+  // The safe area (see above). Every edge keeps the game's margin; the edges
+  // the tiles stand along keep the tiles too, and a second margin past them.
+  const block = (n: number) => n * tile + (n - 1) * gap;
+  const tilesDown = edge + gap + block(portraitRows) + edge; // tiles start a margin and a gap down
+  const tilesAcross = edge + block(columns) + edge;
   useLayoutEffect(() => {
+    const safe = portrait
+      ? { top: tilesDown, right: edge, bottom: edge, left: edge }
+      : { top: edge, right: tilesAcross, bottom: edge, left: tilesAcross };
     const root = document.documentElement.style;
-    root.setProperty('--ctd-hud-side', `${side}px`);
-    root.setProperty('--ctd-hud-top', `${top}px`);
-  }, [side, top]);
+    for (const [side, px] of Object.entries(safe)) root.setProperty(`--ctd-safe-${side}`, `${px}px`);
+  }, [portrait, tilesDown, tilesAcross, edge]);
 
   const slot = (id: string): CSSProperties => {
     // A spotlit tile's slot rises above the shade with it.

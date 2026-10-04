@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, TileLayout, type TileSpec } from './components';
+import { Button, SafeArea, TileLayout, type TileSpec } from './components';
 import { PRESETS } from './pattern';
 import { Playground } from './pages/Playground';
 import './App.css';
@@ -52,7 +52,7 @@ export default function App() {
         }))}
       />
 
-      <div className="page">
+      <SafeArea>
         <header className="hud-title">
           <h1>Be a Crash Test Dummy · UI kit</h1>
           <p>The game's HUD, rebuilt for the web. Work in progress.</p>
@@ -80,7 +80,7 @@ export default function App() {
         </section>
 
         <Playground />
-      </div>
+      </SafeArea>
     </>
   );
 }
