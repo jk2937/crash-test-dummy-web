@@ -7,7 +7,8 @@ import './SafeArea.css';
 //
 //   Landscape: the size of the document -- the screen's height at least,
 //              growing with what is in it -- scrolling with the page, between
-//              the two blocks of tiles.
+//              the two blocks of tiles, which start level with its top and
+//              rise with the page's scroll until they reach the top.
 //   Portrait:  a panel filling the screen below the tiles, its content
 //              scrolling inside it, never passing under them. Scrolling also
 //              slides the HUD up until its header is gone and the icons reach
@@ -22,14 +23,17 @@ export function SafeArea({ children }: { children: ReactNode }) {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    // How far this panel has scrolled, for the HUD to follow (TileLayout.css);
-    // straight onto the page root, so a scroll redraws nothing in React.
+    // How far the page has scrolled, for the HUD to follow (TileLayout.css):
+    // this panel in portrait, the window in landscape (the other is always 0).
+    // Straight onto the page root, so a scroll redraws nothing in React.
     const root = document.documentElement.style;
-    const follow = () => root.setProperty('--ctd-hud-shift', `${el.scrollTop}px`);
+    const follow = () => root.setProperty('--ctd-hud-shift', `${el.scrollTop + window.scrollY}px`);
     follow();
     el.addEventListener('scroll', follow, { passive: true });
+    window.addEventListener('scroll', follow, { passive: true });
     return () => {
       el.removeEventListener('scroll', follow);
+      window.removeEventListener('scroll', follow);
       root.removeProperty('--ctd-hud-shift');
     };
   }, []);

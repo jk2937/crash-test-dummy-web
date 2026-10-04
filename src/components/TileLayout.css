@@ -14,6 +14,11 @@
   padding-left: var(--edge);
   padding-right: var(--edge);
 }
+.tile-layout-landscape {
+  /* Starts below the header, level with the page (--ctd-hud-drop), and rises
+     with the page's scroll until it is back at the top. */
+  top: calc(var(--ctd-hud-drop, 0px) - min(var(--ctd-hud-shift, 0px), var(--ctd-hud-drop, 0px)));
+}
 .tile-layout-portrait {
   justify-content: center;
   /* Slides up as the page scrolls (SafeArea sets --ctd-hud-shift), by no more
@@ -29,8 +34,8 @@
   pointer-events: auto;
   --ctd-tile-size: var(--tile);
 }
-/* The header: a row of its own above the tiles in portrait; on the page in
-   landscape (below). */
+/* The header: a row of its own above the tiles in portrait; on the page,
+   across the top of the screen, in landscape (below). */
 .tile-layout-header {
   align-self: start;
   min-width: 0;
@@ -39,7 +44,7 @@
 }
 .tile-layout-portrait .tile-layout-header { padding: 0; }
 /* Landscape: placed on the page (its top, left and right set inline), so it
-   scrolls with it, under the HUD. */
+   scrolls with it. */
 .tile-layout-header-page {
   position: absolute;
   padding: 0;

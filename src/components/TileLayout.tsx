@@ -75,10 +75,11 @@ function subscribe(onChange: () => void) {
 //              `portraitRows` deep (left's tiles first, then right's); tiles
 //              and gaps shrink so a row fits the screen's width.
 //
-// A header, if given, takes the top of the space between the regions in
-// landscape -- part of the page there, scrolling away with it -- and a row of
-// its own above the tiles in portrait, fixed with them. Either way it has the
-// same space below it as above, and the safe area keeps clear of it.
+// A header, if given, spans the top of the screen above the tiles in either
+// shape: the tiles start level with the page below it, and as the page
+// scrolls the header goes and the tiles rise with the page until they reach
+// the top, then stay. It has the same space below it as above, and the safe
+// area keeps clear of it.
 export function TileLayout({ tiles, columns = 2, portraitRows = 2, shade = false, header }: TileLayoutProps) {
   const [width, height] = useSyncExternalStore(subscribe, readViewport).split('x').map(Number);
 
@@ -151,6 +152,11 @@ export function TileLayout({ tiles, columns = 2, portraitRows = 2, shade = false
   const collapse = portrait && header
     ? Math.max(0, headerHeight + gap + spacer + gap - iconSpill)
     : 0;
+  // Landscape: the header spans the top of the screen, and the tiles start
+  // below it, level with the top of the page -- never above it. As the page
+  // scrolls they rise with it (--ctd-hud-shift again) until they are back at
+  // the top margin, by this much.
+  const drop = !portrait && header ? headerHeight + top : 0;
 
   useLayoutEffect(() => {
     const safe = portrait
@@ -159,9 +165,10 @@ export function TileLayout({ tiles, columns = 2, portraitRows = 2, shade = false
     const root = document.documentElement;
     for (const [side, px] of Object.entries(safe)) root.style.setProperty(`--ctd-safe-${side}`, `${px}px`);
     root.style.setProperty('--ctd-hud-collapse', `${collapse}px`);
+    root.style.setProperty('--ctd-hud-drop', `${drop}px`);
     // Which shape the HUD is in, for SafeArea.
     root.dataset.ctdHud = portrait ? 'portrait' : 'landscape';
-  }, [portrait, safeTop, tilesAcross, edge, collapse]);
+  }, [portrait, safeTop, tilesAcross, edge, collapse, drop]);
 
   const slot = (id: string): CSSProperties => {
     // A spotlit tile's slot rises above the shade with it.
@@ -211,12 +218,12 @@ export function TileLayout({ tiles, columns = 2, portraitRows = 2, shade = false
         <Shade show={shade} />
       </div>
       {/* Landscape: the header belongs to the page, so it scrolls away with it,
-          at the top of the space between the two regions. */}
+          across the top of the screen above the tiles. */}
       {header && !portrait && (
         <div
           ref={headerRef}
           className="tile-layout-header tile-layout-header-page"
-          style={{ top: `${top}px`, left: `${tilesAcross}px`, right: `${tilesAcross}px` }}
+          style={{ top: `${top}px`, left: `${edge}px`, right: `${edge}px` }}
         >
           {header}
         </div>
