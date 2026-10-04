@@ -19,27 +19,19 @@ const RIGHT: [string, string, ColorKey][] = [
 
 // A showcase of the toolkit, laid out like the game's HUD.
 export default function App() {
-  // The empty-queue nag, as in the game: VEHICLES blinks while the queue is
-  // empty and its panel is closed. The very first time (once per save in the
-  // game, once per page here until reset) a shade dims everything else, with
-  // VEHICLES lifted above it, still blinking and the only thing to press.
-  const [queueEmpty, setQueueEmpty] = useState(false);
-  const [shopOpen, setShopOpen] = useState(false);
-  const [shadeShown, setShadeShown] = useState(false);
+  // The nag, as the game's VEHICLES tile does it: the tile blinks until it is
+  // pressed. The first time a queue runs dry the game also dims everything
+  // else, with the tile lifted above the shade -- one test button does each.
+  const [nagging, setNagging] = useState(false);
   const [shadeUp, setShadeUp] = useState(false);
-  const nagging = queueEmpty && !shopOpen;
 
-  const emptyQueue = () => {
-    setQueueEmpty(true);
-    if (!shadeShown) {
-      setShadeUp(true);
-      setShadeShown(true);
-    }
+  const nag = (withShade: boolean) => { setNagging(true); setShadeUp(withShade); };
+  const pressVehicles = () => {
+    if (!nagging) return;
+    setNagging(false);
+    setShadeUp(false);
+    alert('VEHICLES pressed: the nag is over.');
   };
-  // Anything that stops the nag lifts the shade with it.
-  const openShop = () => { setShopOpen(true); setShadeUp(false); };
-  const refill = () => { setQueueEmpty(false); setShadeUp(false); };
-  const resetFirstTime = () => { setShadeShown(false); setShadeUp(false); };
 
   return (
     <>
@@ -53,7 +45,7 @@ export default function App() {
         </section>
         <section className="hud-grid hud-right" aria-label="Right menu">
           <Button label="Vehicles" icon="🚗" color="gold" texture={TILE_TEXTURE}
-            nagging={nagging} spotlit={shadeUp} onClick={openShop} />
+            nagging={nagging} spotlit={shadeUp} onClick={pressVehicles} />
           {RIGHT.map(([label, icon, color]) => <Button key={label} label={label} icon={icon} color={color} texture={TILE_TEXTURE} />)}
         </section>
         <section className="hud-sizes" aria-label="Sizes">
@@ -66,37 +58,16 @@ export default function App() {
 
       <section className="nag-test" aria-labelledby="nag-title">
         <h2 id="nag-title">Nag test</h2>
-        <p>
-          Empty the queue and VEHICLES blinks: twice, then a rest. The first time, the screen dims around it too.
-          Press VEHICLES to open its panel, which stops the blink and lifts the shade.
-        </p>
+        <p>VEHICLES blinks until you press it. The shade version also dims everything else around it.</p>
         <div className="nag-test-row">
-          <button className="nag-test-btn" onClick={emptyQueue} disabled={queueEmpty}>Empty the queue</button>
-          <button className="nag-test-btn" onClick={refill} disabled={!queueEmpty}>Refill the queue</button>
-          <button className="nag-test-btn" onClick={resetFirstTime} disabled={!shadeShown}>Reset first time</button>
+          <button className="nag-test-btn" onClick={() => nag(true)} disabled={nagging}>Shade + blink</button>
+          <button className="nag-test-btn" onClick={() => nag(false)} disabled={nagging}>Blink</button>
         </div>
-        <p className="nag-test-state" aria-live="polite">
-          Queue: <b>{queueEmpty ? 'empty' : 'stocked'}</b> · VEHICLES: <b>{nagging ? 'blinking' : 'still'}</b> ·
-          Shade: <b>{shadeUp ? 'down' : shadeShown ? 'already shown' : 'not shown yet'}</b>
-        </p>
       </section>
 
       <Playground />
 
       <Shade show={shadeUp} />
-
-      {shopOpen && (
-        <div className="shop-backdrop" onClick={() => setShopOpen(false)}>
-          <div className="shop" role="dialog" aria-modal aria-labelledby="shop-title" onClick={(e) => e.stopPropagation()}>
-            <h2 id="shop-title">VEHICLES</h2>
-            <p>A stand-in for the game's Vehicles panel.</p>
-            <div className="nag-test-row">
-              <button className="nag-test-btn nag-test-gold" onClick={() => { refill(); setShopOpen(false); }}>Buy 10</button>
-              <button className="nag-test-btn" onClick={() => setShopOpen(false)}>Close</button>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }
