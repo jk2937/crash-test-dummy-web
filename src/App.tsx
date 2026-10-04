@@ -53,6 +53,12 @@ export default function App() {
 
       <TileLayout
         shade={spotlit}
+        header={(
+          <header className="hud-title">
+            <h1>Be a Crash Test Dummy · UI kit</h1>
+            <p>The game's HUD, rebuilt for the web. Work in progress.</p>
+          </header>
+        )}
         tiles={TILES.map((t, i) => ({
           ...t,
           texture: TEXTURES[i % TEXTURES.length],
@@ -65,11 +71,6 @@ export default function App() {
 
       <SafeArea>
         {route === 'lab' ? <TileLab /> : route === 'facility' ? <Facility /> : (<>
-          <header className="hud-title">
-            <h1>Be a Crash Test Dummy · UI kit</h1>
-            <p>The game's HUD, rebuilt for the web. Work in progress.</p>
-          </header>
-
           <main className="hud">
             <section className="hud-sizes" aria-label="Sizes">
               <Button label="Small" icon="🚀" color="setup" texture={TILE_TEXTURE} size="small" />
