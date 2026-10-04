@@ -7,7 +7,16 @@
   margin: 0 auto;
 }
 .hud-title { text-align: center; }
-.hud-title h1 { margin: 0 0 8px; font-size: clamp(44px, 8vw, 72px); line-height: 1.05; }
+.hud-title h1 {
+  margin: 0 0 8px;
+  font-size: clamp(88px, 16vw, 144px);
+  line-height: 1.05;
+  /* White with a black outline, as the tiles' labels are: the outline is drawn
+     under the letters, so it widens them rather than eating into them. */
+  color: #fff;
+  -webkit-text-stroke: 0.12em var(--ctd-panel);
+  paint-order: stroke fill;
+}
 .hud-title p { margin: 0; }
 /* Room above the row for the icons that spill past their tiles. */
 .hud-sizes { display: flex; flex-wrap: wrap; gap: 36px 24px; padding-top: 30px; align-items: end; justify-content: center; }
